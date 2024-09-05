@@ -32,6 +32,8 @@ add_executable(racetrack_builder src/main.cpp
     src/resource_manager.h
     src/shader.cpp
     src/shader.h
+    src/render_nodes/blueprint.cpp
+    src/render_nodes/blueprint.h
 )
 
 add_library(glad vendor/glad/src/glad.c)

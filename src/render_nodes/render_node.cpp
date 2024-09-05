@@ -1,5 +1,9 @@
 #include "render_node.h"
 
+void RenderNode::prepare() {
+    shader.use();
+}
+
 void RenderNode::setShaderViewMatrix(glm::mat4 view) const {
     shader.setMat4("view", view);
 }

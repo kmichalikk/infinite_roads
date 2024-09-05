@@ -83,8 +83,6 @@ void Probe::drawWorldDirections(glm::vec3 direction) {
 }
 
 void Probe::draw(double dt) {
-    shader.use();
-
     glBindVertexArray(VAO);
 
     glm::mat4 model = glm::translate(glm::scale(glm::mat4(1.0f), glm::vec3(0.3f)), position);

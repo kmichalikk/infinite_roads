@@ -10,6 +10,8 @@
 struct GameConfig {
     int screenWidth, screenHeight;
     int ready;
+    glm::mat4 projectionMatrix;
+    glm::mat4 viewMatrix;
 };
 
 class Game {
@@ -18,8 +20,6 @@ private:
     GLFWwindow* window;
     double lastFrameTime;
     std::vector<std::unique_ptr<RenderNode>> renderNodes;
-    glm::mat4 projectionMatrix;
-    glm::mat4 viewMatrix;
     static void resizeWindowCallback(GLFWwindow *window, int width, int height);
     bool initializeLibraries();
     void registerRenderNodes();

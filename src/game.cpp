@@ -3,6 +3,7 @@
 #include "resource_manager.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
+#include "render_nodes/blueprint.h"
 #include "render_nodes/probe.h"
 
 Game::Game(int screenWidth, int screenHeight) {
@@ -16,6 +17,13 @@ void Game::resizeWindowCallback(GLFWwindow *window, int width, int height) {
     config->screenWidth = width;
     config->screenHeight = height;
     glViewport(0, 0, width, height);
+
+    config->projectionMatrix = glm::perspective(
+        glm::radians(45.0f),
+        (float) config->screenWidth / (float) config->screenHeight,
+        0.1f,
+        100.0f
+    );
 }
 
 bool Game::initializeLibraries() {
@@ -57,6 +65,7 @@ bool Game::initializeLibraries() {
 }
 
 void Game::registerRenderNodes() {
+    renderNodes.push_back(std::make_unique<Blueprint>(100));
     renderNodes.push_back(std::make_unique<Probe>(glm::vec3(0.0, 0.0, 0.0)));
 }
 
@@ -68,16 +77,17 @@ void Game::initialize() {
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
 
-    projectionMatrix = glm::perspective(
+    config.projectionMatrix = glm::perspective(
         glm::radians(45.0f),
         (float) config.screenWidth / (float) config.screenHeight,
         0.1f,
         100.0f
     );
 
-    viewMatrix = glm::lookAt(glm::vec3(2.0, 4.0, 5.0), glm::vec3(0), glm::vec3(0, 1, 0));
+    config.viewMatrix = glm::lookAt(glm::vec3(2.0, 4.0, 5.0), glm::vec3(0), glm::vec3(0, 1, 0));
 
     ResourceManager::loadShader("probe");
+    ResourceManager::loadShader("blueprint");
 
     registerRenderNodes();
 
@@ -105,8 +115,9 @@ void Game::startMainLoop() {
         lastFrameTime = currentFrameTime;
 
         for (const auto &node : renderNodes) {
-            node->setShaderProjectionMatrix(projectionMatrix);
-            node->setShaderViewMatrix(viewMatrix);
+            node->prepare();
+            node->setShaderProjectionMatrix(config.projectionMatrix);
+            node->setShaderViewMatrix(config.viewMatrix);
             node->draw(deltaTime);
         }
 
