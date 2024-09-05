@@ -66,7 +66,7 @@ bool Game::initializeLibraries() {
 
 void Game::registerRenderNodes() {
     renderNodes.push_back(std::make_unique<Blueprint>(100));
-    renderNodes.push_back(std::make_unique<Probe>(glm::vec3(0.0, 0.0, 0.0)));
+    renderNodes.push_back(std::make_unique<Probe>(glm::vec3(0.0, 0.5, 0.0)));
 }
 
 void Game::initialize() {
