@@ -5,19 +5,20 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 
+#include "camera.h"
 #include "render_nodes/render_node.h"
 
 struct GameConfig {
     int screenWidth, screenHeight;
     int ready;
     glm::mat4 projectionMatrix;
-    glm::mat4 viewMatrix;
 };
 
 class Game {
 private:
     GameConfig config;
     GLFWwindow* window;
+    Camera camera;
     double lastFrameTime;
     std::vector<std::unique_ptr<RenderNode>> renderNodes;
     static void resizeWindowCallback(GLFWwindow *window, int width, int height);

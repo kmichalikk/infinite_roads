@@ -1,6 +1,7 @@
 #include "game.h"
 #include "macros.h"
 #include "resource_manager.h"
+#include "events/event_dispatcher.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "render_nodes/blueprint.h"
@@ -24,6 +25,24 @@ void Game::resizeWindowCallback(GLFWwindow *window, int width, int height) {
         0.1f,
         100.0f
     );
+}
+
+void mouseCallback(GLFWwindow *window, double x, double y) {
+    MouseEvent *event = new MouseEvent;
+    event->position = glm::vec2(x, y);
+    eventDispatcher.dispatch(EventType::MOUSEMOVE, event);
+    delete event;
+}
+
+void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
+    MouseButtonEvent *event = new MouseButtonEvent;
+    event->action = action;
+    event->button = button;
+    double x, y;
+    glfwGetCursorPos(window, &x, &y);
+    event->position = glm::vec2(x, y);
+    eventDispatcher.dispatch(EventType::MOUSEBUTTON, event);
+    delete event;
 }
 
 bool Game::initializeLibraries() {
@@ -60,6 +79,8 @@ bool Game::initializeLibraries() {
 
     glViewport(0, 0, config.screenWidth, config.screenHeight);
     glfwSetFramebufferSizeCallback(window, resizeWindowCallback);
+    glfwSetCursorPosCallback(window, mouseCallback);
+    glfwSetMouseButtonCallback(window, mouseButtonCallback);
 
     return true;
 }
@@ -83,8 +104,6 @@ void Game::initialize() {
         0.1f,
         100.0f
     );
-
-    config.viewMatrix = glm::lookAt(glm::vec3(2.0, 4.0, 5.0), glm::vec3(0), glm::vec3(0, 1, 0));
 
     ResourceManager::loadShader("probe");
     ResourceManager::loadShader("blueprint");
@@ -117,7 +136,7 @@ void Game::startMainLoop() {
         for (const auto &node : renderNodes) {
             node->prepare();
             node->setShaderProjectionMatrix(config.projectionMatrix);
-            node->setShaderViewMatrix(config.viewMatrix);
+            node->setShaderViewMatrix(camera.getViewMatrix());
             node->draw(deltaTime);
         }
 

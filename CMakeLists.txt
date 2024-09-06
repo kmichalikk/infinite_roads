@@ -34,6 +34,11 @@ add_executable(racetrack_builder src/main.cpp
     src/shader.h
     src/render_nodes/blueprint.cpp
     src/render_nodes/blueprint.h
+    src/camera.cpp
+    src/camera.h
+    src/events/event_dispatcher.cpp
+    src/events/event_dispatcher.h
+    src/events/events.h
 )
 
 add_library(glad vendor/glad/src/glad.c)
