@@ -8,6 +8,7 @@
 #include "camera.h"
 #include "game_config.h"
 #include "render_nodes/highlight.h"
+#include "render_nodes/racetrack_blueprint.h"
 #include "render_nodes/render_node.h"
 
 class Game {
@@ -17,11 +18,13 @@ private:
     Camera camera;
     double lastFrameTime;
     std::shared_ptr<Highlight> highlight;
+    std::shared_ptr<RacetrackBlueprint> racetrackBlueprint;
     std::vector<std::shared_ptr<RenderNode>> renderNodes;
 
     static void resizeWindowCallback(GLFWwindow *window, int width, int height);
     bool initializeLibraries();
     void registerRenderNodes();
+    void raycastClick(void *mouseButtonEvent);
 public:
     Game(int screenWidth, int screenHeight);
     void initialize();

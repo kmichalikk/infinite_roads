@@ -2,8 +2,10 @@
 
 in float alpha;
 
+uniform vec3 highlightColor;
+
 out vec4 color;
 
 void main() {
-    color = vec4(0.5, 0.6, 0.8, alpha);
+    color = vec4(highlightColor, alpha);
 }

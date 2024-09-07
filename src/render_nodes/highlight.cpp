@@ -7,9 +7,9 @@
 #include "../resource_manager.h"
 #include "glm/ext/matrix_transform.hpp"
 
-Highlight::Highlight() {
+Highlight::Highlight(glm::vec3 color)
+    : position(0.0f), color(color) {
     shader = ResourceManager::getShader("highlight");
-    position = glm::vec3(0.0f);
 
     float points[288];
     float theta = 2 * M_PI / 12;
@@ -70,6 +70,7 @@ void Highlight::draw(double dt) {
 
     glm::mat4 model = glm::scale(glm::translate(glm::mat4(1.0f), position), glm::vec3(0.3f));
     shader.setMat4("model", model);
+    shader.setVec3f("highlightColor", color);
 
     glDisable(GL_CULL_FACE);
     glDrawArrays(GL_TRIANGLES, 36, 36);

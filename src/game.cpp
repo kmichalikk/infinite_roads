@@ -88,8 +88,20 @@ bool Game::initializeLibraries() {
 void Game::registerRenderNodes() {
     renderNodes.push_back(std::make_shared<Blueprint>(100));
     renderNodes.push_back(std::make_shared<Probe>(glm::vec3(0.0, 0.5, 0.0)));
-    highlight = std::make_shared<Highlight>();
+
+    highlight = std::make_shared<Highlight>(glm::vec3(0.5f, 0.6f, 0.8f));
     renderNodes.push_back(highlight);
+
+    racetrackBlueprint = std::make_shared<RacetrackBlueprint>();
+    renderNodes.push_back(racetrackBlueprint);
+    eventDispatcher.subscribe(EventType::MOUSEBUTTON, [this](void * event){ raycastClick(event); });
+}
+
+void Game::raycastClick(void *mouseButtonEvent) {
+    MouseButtonEvent *event = static_cast<MouseButtonEvent *>(mouseButtonEvent);
+    if (event->button == GLFW_MOUSE_BUTTON_LEFT && event->action == GLFW_PRESS) {
+        racetrackBlueprint->addInterpolationNode(camera.getRayIntersection(config));
+    }
 }
 
 void Game::initialize() {
