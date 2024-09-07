@@ -86,8 +86,10 @@ bool Game::initializeLibraries() {
 }
 
 void Game::registerRenderNodes() {
-    renderNodes.push_back(std::make_unique<Blueprint>(100));
-    renderNodes.push_back(std::make_unique<Probe>(glm::vec3(0.0, 0.5, 0.0)));
+    renderNodes.push_back(std::make_shared<Blueprint>(100));
+    renderNodes.push_back(std::make_shared<Probe>(glm::vec3(0.0, 0.5, 0.0)));
+    highlight = std::make_shared<Highlight>();
+    renderNodes.push_back(highlight);
 }
 
 void Game::initialize() {
@@ -97,6 +99,8 @@ void Game::initialize() {
 
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     config.projectionMatrix = glm::perspective(
         glm::radians(45.0f),
@@ -107,6 +111,7 @@ void Game::initialize() {
 
     ResourceManager::loadShader("probe");
     ResourceManager::loadShader("blueprint");
+    ResourceManager::loadShader("highlight");
 
     registerRenderNodes();
 
@@ -132,6 +137,8 @@ void Game::startMainLoop() {
         double currentFrameTime = glfwGetTime();
         double deltaTime = lastFrameTime - currentFrameTime;
         lastFrameTime = currentFrameTime;
+
+        highlight->setPosition(camera.getRayIntersection(config));
 
         for (const auto &node : renderNodes) {
             node->prepare();

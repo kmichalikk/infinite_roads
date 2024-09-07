@@ -1,5 +1,6 @@
 #pragma once
 
+#include "game_config.h"
 #include "events/events.h"
 #include "glm/glm.hpp"
 
@@ -22,4 +23,5 @@ private:
 public:
     Camera();
     glm::mat4 getViewMatrix() const { return viewMatrix; };
+    glm::vec3 getRayIntersection(const GameConfig &config) const;
 };

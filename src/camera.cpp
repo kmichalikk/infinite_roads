@@ -2,7 +2,6 @@
 
 #include <iostream>
 
-#include "macros.h"
 #include "events/event_dispatcher.h"
 #include "GLFW/glfw3.h"
 #include "glm/ext/matrix_transform.hpp"
@@ -22,8 +21,9 @@ void Camera::handleMouse(void *rawEvent) {
     MouseEvent *event = static_cast<MouseEvent *>(rawEvent);
     if (grab) {
         recalculate(event->position - prevMousePosition);
-        prevMousePosition = event->position;
     }
+
+    prevMousePosition = event->position;
 }
 
 void Camera::handleMouseButton(void *rawEvent) {
@@ -43,4 +43,23 @@ void Camera::recalculate(glm::vec2 mouseDiff) {
     origin.z -= mouseDiff.y * moveScale;
     position = origin + offsetVector;
     viewMatrix = glm::lookAt(position, origin, glm::vec3(0, 1.0, 0));
+}
+
+glm::vec3 Camera::getRayIntersection(const GameConfig &config) const {
+    glm::vec4 rayClip(
+        (2.0f * prevMousePosition.x) / config.screenWidth - 1.0f,
+        1.0f - (2.0f * prevMousePosition.y) / config.screenHeight,
+        -1.0f,
+        1.0f
+    );
+
+    glm::vec4 rayEye = glm::inverse(config.projectionMatrix) * rayClip;
+    rayEye = glm::vec4(rayEye.x, rayEye.y, -1.0, 0.0);
+
+    glm::vec3 rayWorld = glm::inverse(viewMatrix) * rayEye;
+    rayWorld = normalize(rayWorld);
+
+    float t = position.y / rayWorld.y;
+
+    return position - rayWorld * t;
 }

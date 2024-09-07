@@ -39,6 +39,9 @@ add_executable(racetrack_builder src/main.cpp
     src/events/event_dispatcher.cpp
     src/events/event_dispatcher.h
     src/events/events.h
+    src/game_config.h
+    src/render_nodes/highlight.cpp
+    src/render_nodes/highlight.h
 )
 
 add_library(glad vendor/glad/src/glad.c)

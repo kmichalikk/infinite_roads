@@ -6,13 +6,9 @@
 #include <vector>
 
 #include "camera.h"
+#include "game_config.h"
+#include "render_nodes/highlight.h"
 #include "render_nodes/render_node.h"
-
-struct GameConfig {
-    int screenWidth, screenHeight;
-    int ready;
-    glm::mat4 projectionMatrix;
-};
 
 class Game {
 private:
@@ -20,7 +16,9 @@ private:
     GLFWwindow* window;
     Camera camera;
     double lastFrameTime;
-    std::vector<std::unique_ptr<RenderNode>> renderNodes;
+    std::shared_ptr<Highlight> highlight;
+    std::vector<std::shared_ptr<RenderNode>> renderNodes;
+
     static void resizeWindowCallback(GLFWwindow *window, int width, int height);
     bool initializeLibraries();
     void registerRenderNodes();
