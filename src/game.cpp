@@ -100,7 +100,11 @@ void Game::registerRenderNodes() {
 void Game::raycastClick(void *mouseButtonEvent) {
     MouseButtonEvent *event = static_cast<MouseButtonEvent *>(mouseButtonEvent);
     if (event->button == GLFW_MOUSE_BUTTON_LEFT && event->action == GLFW_PRESS) {
-        racetrackBlueprint->addInterpolationNode(camera.getRayIntersection(config));
+        if (racetrackBlueprint->snapToFirst(highlight.get())) {
+            racetrackBlueprint->finish();
+        } else {
+            racetrackBlueprint->addInterpolationNode(camera.getRayIntersection(config));
+        }
     }
 }
 
@@ -151,6 +155,7 @@ void Game::startMainLoop() {
         lastFrameTime = currentFrameTime;
 
         highlight->setPosition(camera.getRayIntersection(config));
+        racetrackBlueprint->snapToFirst(highlight.get());
 
         for (const auto &node : renderNodes) {
             node->prepare();
