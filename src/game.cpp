@@ -1,6 +1,7 @@
 #include "game.h"
 #include "macros.h"
 #include "resource_manager.h"
+#include "spline_interpolation.h"
 #include "events/event_dispatcher.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
@@ -101,7 +102,7 @@ void Game::raycastClick(void *mouseButtonEvent) {
     MouseButtonEvent *event = static_cast<MouseButtonEvent *>(mouseButtonEvent);
     if (event->button == GLFW_MOUSE_BUTTON_LEFT && event->action == GLFW_PRESS) {
         if (racetrackBlueprint->snapToFirst(highlight.get())) {
-            racetrackBlueprint->finish();
+            interpolation = racetrackBlueprint->finish();
         } else {
             racetrackBlueprint->addInterpolationNode(camera.getRayIntersection(config));
         }
@@ -154,8 +155,14 @@ void Game::startMainLoop() {
         double deltaTime = lastFrameTime - currentFrameTime;
         lastFrameTime = currentFrameTime;
 
-        highlight->setPosition(camera.getRayIntersection(config));
-        racetrackBlueprint->snapToFirst(highlight.get());
+        if (!racetrackBlueprint->finished()) {
+            highlight->setPosition(camera.getRayIntersection(config));
+            racetrackBlueprint->snapToFirst(highlight.get());
+        } else {
+            float slowTime = glfwGetTime() / 10;
+            float t = slowTime - (int) slowTime;
+            highlight->setPosition(interpolation.sample(t));
+        }
 
         for (const auto &node : renderNodes) {
             node->prepare();

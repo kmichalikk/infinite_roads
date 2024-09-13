@@ -4,6 +4,7 @@
 
 #include "highlight.h"
 #include "render_node.h"
+#include "../spline_interpolation.h"
 
 class RacetrackBlueprint : public RenderNode {
 private:
@@ -16,6 +17,6 @@ public:
     void setShaderViewMatrix(glm::mat4 view) const override;
     void setShaderProjectionMatrix(glm::mat4 projection) const override;
     bool snapToFirst(Highlight *highlight);
-    void finish();
+    SplineInterpolation finish();
     bool finished() const { return loopMade; }
 };

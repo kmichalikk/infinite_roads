@@ -19,6 +19,7 @@ private:
     double lastFrameTime;
     std::shared_ptr<Highlight> highlight;
     std::shared_ptr<RacetrackBlueprint> racetrackBlueprint;
+    SplineInterpolation interpolation;
     std::vector<std::shared_ptr<RenderNode>> renderNodes;
 
     static void resizeWindowCallback(GLFWwindow *window, int width, int height);

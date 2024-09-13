@@ -18,7 +18,20 @@ FetchContent_Declare(
     GIT_TAG 0af55ccecd98d4e5a8d1fad7de25ba429d60e863
     SYSTEM
 )
-FetchContent_MakeAvailable(glfw glm)
+
+FetchContent_Declare(
+    Eigen3 SYSTEM
+    GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+    GIT_TAG 3147391d946bb4b6c68edd901f2add6ac1f31f8c
+    SOURCE_SUBDIR nonexistent_do_not_configure_make_targets
+)
+FetchContent_MakeAvailable(glfw glm Eigen3)
+
+# https://stackoverflow.com/questions/77210209
+if(NOT TARGET Eigen3::Eigen)
+    add_library(Eigen3::Eigen INTERFACE IMPORTED)
+    set_target_properties(Eigen3::Eigen PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${eigen3_SOURCE_DIR})
+endif()
 
 add_executable(racetrack_builder src/main.cpp
     src/game.cpp
@@ -44,6 +57,8 @@ add_executable(racetrack_builder src/main.cpp
     src/render_nodes/highlight.h
     src/render_nodes/racetrack_blueprint.cpp
     src/render_nodes/racetrack_blueprint.h
+    src/spline_interpolation.cpp
+    src/spline_interpolation.h
 )
 
 add_library(glad vendor/glad/src/glad.c)
@@ -54,4 +69,5 @@ target_link_libraries(
     glad
     glfw
     glm
+    Eigen3::Eigen
 )

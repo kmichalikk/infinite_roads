@@ -1,6 +1,9 @@
 #include "racetrack_blueprint.h"
 
+#include <algorithm>
 #include <iostream>
+
+#include "../spline_interpolation.h"
 
 void RacetrackBlueprint::addInterpolationNode(glm::vec3 position) {
     if (loopMade) {
@@ -51,9 +54,20 @@ bool RacetrackBlueprint::snapToFirst(Highlight *highlight) {
     return false;
 }
 
-void RacetrackBlueprint::finish() {
-    if (loopPossible) {
-        loopMade = true;
-        interpolationNodes.at(0).setColor(glm::vec3(1.0f));
+SplineInterpolation RacetrackBlueprint::finish() {
+    if (!loopPossible) {
+        throw "invalid state";
     }
+
+    interpolationNodes.at(0).setColor(glm::vec3(1.0f));
+    std::vector<glm::vec3> nodes;
+    std::transform(
+        interpolationNodes.begin(),
+        interpolationNodes.end(),
+        std::back_inserter(nodes), [](const Highlight &h) { return h.getPosition(); }
+    );
+    SplineInterpolation interpolation(nodes);
+    loopMade = true;
+
+    return interpolation;
 }
