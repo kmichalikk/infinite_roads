@@ -175,6 +175,7 @@ void Game::startMainLoop() {
             float slowTime = glfwGetTime() / 10;
             float t = slowTime - (int) slowTime;
             car->setPosition(interpolation.samplePosition(t));
+            car->setNormal(interpolation.sampleNormal(t));
         }
 
         camera.update(deltaTime);

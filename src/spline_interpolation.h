@@ -14,7 +14,7 @@ struct QubicCoeff {
     float a, b, c, d;
     QubicCoeff(const float a, const float b, const float c, const float d)
         : a(a), b(b), c(c), d(d) {  }
-    QubicCoeff derivative() const { return { 3 * a, 2 * b, 1, 0 }; }
+    QubicCoeff derivative() const { return { 3 * a, 2 * b, c, 0 }; }
 };
 
 class SplineInterpolation {

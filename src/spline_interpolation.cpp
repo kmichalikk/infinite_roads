@@ -46,9 +46,9 @@ SplineInterpolation::SplineInterpolation(const std::vector<glm::vec3> &nodes) {
         samples.emplace_back(ParameterSpaceValue<glm::vec3>{ u, sample });
 
         glm::vec3 tangent(
-            xDerivativeCoeff.a * pow(u, 3) + xDerivativeCoeff.b * pow(u, 2) + xDerivativeCoeff.c,
-            yDerivativeCoeff.a * pow(u, 3) + yDerivativeCoeff.b * pow(u, 2) + yDerivativeCoeff.c,
-            zDerivativeCoeff.a * pow(u, 3) + zDerivativeCoeff.b * pow(u, 2) + zDerivativeCoeff.c
+            xDerivativeCoeff.a * pow(u, 2) + xDerivativeCoeff.b * u + xDerivativeCoeff.c,
+            yDerivativeCoeff.a * pow(u, 2) + yDerivativeCoeff.b * u + yDerivativeCoeff.c,
+            zDerivativeCoeff.a * pow(u, 2) + zDerivativeCoeff.b * u + zDerivativeCoeff.c
         );
 
         glm::vec3 normal = glm::normalize(glm::cross(up, tangent));
