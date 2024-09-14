@@ -19,6 +19,11 @@ SplineInterpolation::SplineInterpolation(const std::vector<glm::vec3> &nodes) {
     QubicCoeff xCoeff = xSplines[0].value;
     QubicCoeff yCoeff = ySplines[0].value;
     QubicCoeff zCoeff = zSplines[0].value;
+    QubicCoeff xDerivativeCoeff = xCoeff.derivative();
+    QubicCoeff yDerivativeCoeff = yCoeff.derivative();
+    QubicCoeff zDerivativeCoeff = zCoeff.derivative();
+
+    glm::vec3 up(0, 1, 0);
 
     float step = SCALE / (2<<9);
 
@@ -28,13 +33,26 @@ SplineInterpolation::SplineInterpolation(const std::vector<glm::vec3> &nodes) {
             xCoeff = xSplines[splineIndex].value;
             yCoeff = ySplines[splineIndex].value;
             zCoeff = zSplines[splineIndex].value;
+            xDerivativeCoeff = xCoeff.derivative();
+            yDerivativeCoeff = yCoeff.derivative();
+            zDerivativeCoeff = zCoeff.derivative();
         }
 
-        samples.emplace_back(ParameterSpaceValue<glm::vec3>{u, glm::vec3(
+        glm::vec3 sample(
             xCoeff.a * pow(u, 3) + xCoeff.b * pow(u, 2) + xCoeff.c * u + xCoeff.d,
             yCoeff.a * pow(u, 3) + yCoeff.b * pow(u, 2) + yCoeff.c * u + yCoeff.d,
             zCoeff.a * pow(u, 3) + zCoeff.b * pow(u, 2) + zCoeff.c * u + zCoeff.d
-        )});
+        );
+        samples.emplace_back(ParameterSpaceValue<glm::vec3>{ u, sample });
+
+        glm::vec3 tangent(
+            xDerivativeCoeff.a * pow(u, 3) + xDerivativeCoeff.b * pow(u, 2) + xDerivativeCoeff.c,
+            yDerivativeCoeff.a * pow(u, 3) + yDerivativeCoeff.b * pow(u, 2) + yDerivativeCoeff.c,
+            zDerivativeCoeff.a * pow(u, 3) + zDerivativeCoeff.b * pow(u, 2) + zDerivativeCoeff.c
+        );
+
+        glm::vec3 normal = glm::normalize(glm::cross(up, tangent));
+        normalSamples.emplace_back(ParameterSpaceValue<glm::vec3>{ u, normal });
 
         u += step;
     }
@@ -159,23 +177,33 @@ SplineInterpolation::SplineInterpolation() {
     samples = { ParameterSpaceValue<glm::vec3>{ 0.0f, glm::vec3() } };
 }
 
-glm::vec3 SplineInterpolation::sample(float t) {
+glm::vec3 SplineInterpolation::sample(float t, bool normal) {
     t *= SCALE;
 
+    std::vector<ParameterSpaceValue<glm::vec3>> space = normal ? normalSamples : samples;
+
     int leftmostIndex = bisectSamples(t);
-    if (leftmostIndex+1 == samples.size()) {
-        return samples[leftmostIndex].value;
+    if (leftmostIndex+1 == space.size()) {
+        return space[leftmostIndex].value;
     }
 
-    float diffT = samples[leftmostIndex+1].t - samples[leftmostIndex].t;
-    float lerpT = (samples[leftmostIndex+1].t - t) / diffT;
+    float diffT = space[leftmostIndex+1].t - space[leftmostIndex].t;
+    float lerpT = (space[leftmostIndex+1].t - t) / diffT;
 
-    glm::vec3 v1 = samples[leftmostIndex].value;
-    glm::vec3 v2 = samples[leftmostIndex+1].value;
+    glm::vec3 v1 = space[leftmostIndex].value;
+    glm::vec3 v2 = space[leftmostIndex+1].value;
 
     return {
         v1.x * lerpT + v2.x * (1-lerpT),
         v1.y * lerpT + v2.y * (1-lerpT),
         v1.z * lerpT + v2.z * (1-lerpT)
     };
+}
+
+glm::vec3 SplineInterpolation::samplePosition(float t) {
+    return sample(t, false);
+}
+
+glm::vec3 SplineInterpolation::sampleNormal(float t) {
+    return sample(t, true);
 }

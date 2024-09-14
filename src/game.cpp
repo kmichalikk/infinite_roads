@@ -49,7 +49,6 @@ void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
 void mouseScrollCallback(GLFWwindow *window, double xOffset, double yOffset) {
     MouseScrollEvent *event = new MouseScrollEvent;
     event->direction = (int) (yOffset / abs(yOffset));
-    std::cout << event->direction << std::endl;
     eventDispatcher.dispatch(MOUSESCROLL, event);
     delete event;
 }
@@ -170,7 +169,7 @@ void Game::startMainLoop() {
         } else {
             float slowTime = glfwGetTime() / 10;
             float t = slowTime - (int) slowTime;
-            highlight->setPosition(interpolation.sample(t));
+            highlight->setPosition(interpolation.samplePosition(t));
         }
 
         camera.update(deltaTime);
