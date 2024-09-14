@@ -46,6 +46,14 @@ void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
     delete event;
 }
 
+void mouseScrollCallback(GLFWwindow *window, double xOffset, double yOffset) {
+    MouseScrollEvent *event = new MouseScrollEvent;
+    event->direction = (int) (yOffset / abs(yOffset));
+    std::cout << event->direction << std::endl;
+    eventDispatcher.dispatch(MOUSESCROLL, event);
+    delete event;
+}
+
 bool Game::initializeLibraries() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -82,6 +90,7 @@ bool Game::initializeLibraries() {
     glfwSetFramebufferSizeCallback(window, resizeWindowCallback);
     glfwSetCursorPosCallback(window, mouseCallback);
     glfwSetMouseButtonCallback(window, mouseButtonCallback);
+    glfwSetScrollCallback(window, mouseScrollCallback);
 
     return true;
 }
@@ -163,6 +172,8 @@ void Game::startMainLoop() {
             float t = slowTime - (int) slowTime;
             highlight->setPosition(interpolation.sample(t));
         }
+
+        camera.update(deltaTime);
 
         for (const auto &node : renderNodes) {
             node->prepare();

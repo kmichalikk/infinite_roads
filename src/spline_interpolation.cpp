@@ -163,7 +163,6 @@ glm::vec3 SplineInterpolation::sample(float t) {
     t *= SCALE;
 
     int leftmostIndex = bisectSamples(t);
-    std::cout << leftmostIndex << "/" << samples.size() << std::endl;
     if (leftmostIndex+1 == samples.size()) {
         return samples[leftmostIndex].value;
     }

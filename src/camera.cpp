@@ -15,6 +15,7 @@ Camera::Camera() {
 
     eventDispatcher.subscribe(MOUSEMOVE, [this](void *event){ handleMouse(event); });
     eventDispatcher.subscribe(MOUSEBUTTON, [this](void *event){ handleMouseButton(event); });
+    eventDispatcher.subscribe(MOUSESCROLL, [this](void *event){ handleScroll(event); });
 }
 
 void Camera::handleMouse(void *rawEvent) {
@@ -36,6 +37,12 @@ void Camera::handleMouseButton(void *rawEvent) {
             grab = false;
         }
     }
+}
+
+void Camera::handleScroll(void *rawEvent) {
+    MouseScrollEvent *event = static_cast<MouseScrollEvent *>(rawEvent);
+    lastScrollDirection = event->direction;
+    lastScrollEvent = glfwGetTime();
 }
 
 void Camera::recalculate(glm::vec2 mouseDiff) {
@@ -62,4 +69,20 @@ glm::vec3 Camera::getRayIntersection(const GameConfig &config) const {
     float t = position.y / rayWorld.y;
 
     return position - rayWorld * t;
+}
+
+void Camera::update(double dt) {
+    if (lastScrollEvent + 0.1 > glfwGetTime()) {
+        scrollSpeed = lastScrollDirection * 2;
+    } else {
+        scrollSpeed *= 0.5;
+    }
+
+    glm::vec3 newOffsetVector = offsetVector + offsetVector * scrollSpeed * (float) dt;
+
+    if (newOffsetVector.y > 5 && newOffsetVector.y < 40) {
+        offsetVector = newOffsetVector;
+    }
+
+    recalculate(glm::vec2());
 }
