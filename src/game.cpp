@@ -104,6 +104,8 @@ void Game::registerRenderNodes() {
     racetrackBlueprint = std::make_shared<RacetrackBlueprint>();
     renderNodes.push_back(racetrackBlueprint);
     eventDispatcher.subscribe(EventType::MOUSEBUTTON, [this](void * event){ raycastClick(event); });
+
+    car = std::make_shared<Car>(); // only create, will be added after racetrack is finished
 }
 
 void Game::raycastClick(void *mouseButtonEvent) {
@@ -111,6 +113,8 @@ void Game::raycastClick(void *mouseButtonEvent) {
     if (event->button == GLFW_MOUSE_BUTTON_LEFT && event->action == GLFW_PRESS) {
         if (racetrackBlueprint->snapToFirst(highlight.get())) {
             interpolation = racetrackBlueprint->finish();
+            car->setPosition(interpolation.samplePosition(0.0));
+            renderNodes.push_back(car);
         } else {
             racetrackBlueprint->addInterpolationNode(camera.getRayIntersection(config));
         }
@@ -137,6 +141,7 @@ void Game::initialize() {
     ResourceManager::loadShader("probe");
     ResourceManager::loadShader("blueprint");
     ResourceManager::loadShader("highlight");
+    ResourceManager::loadShader("color");
 
     registerRenderNodes();
 
@@ -163,13 +168,13 @@ void Game::startMainLoop() {
         double deltaTime = lastFrameTime - currentFrameTime;
         lastFrameTime = currentFrameTime;
 
-        if (!racetrackBlueprint->finished()) {
-            highlight->setPosition(camera.getRayIntersection(config));
-            racetrackBlueprint->snapToFirst(highlight.get());
-        } else {
+        highlight->setPosition(camera.getRayIntersection(config));
+        racetrackBlueprint->snapToFirst(highlight.get());
+
+        if (racetrackBlueprint->finished()) {
             float slowTime = glfwGetTime() / 10;
             float t = slowTime - (int) slowTime;
-            highlight->setPosition(interpolation.samplePosition(t));
+            car->setPosition(interpolation.samplePosition(t));
         }
 
         camera.update(deltaTime);

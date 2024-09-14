@@ -7,6 +7,7 @@
 
 #include "camera.h"
 #include "game_config.h"
+#include "render_nodes/car.h"
 #include "render_nodes/highlight.h"
 #include "render_nodes/racetrack_blueprint.h"
 #include "render_nodes/render_node.h"
@@ -19,6 +20,7 @@ private:
     double lastFrameTime;
     std::shared_ptr<Highlight> highlight;
     std::shared_ptr<RacetrackBlueprint> racetrackBlueprint;
+    std::shared_ptr<Car> car;
     SplineInterpolation interpolation;
     std::vector<std::shared_ptr<RenderNode>> renderNodes;
 

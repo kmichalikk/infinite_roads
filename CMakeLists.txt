@@ -59,6 +59,8 @@ add_executable(racetrack_builder src/main.cpp
     src/render_nodes/racetrack_blueprint.h
     src/spline_interpolation.cpp
     src/spline_interpolation.h
+    src/render_nodes/car.cpp
+    src/render_nodes/car.h
 )
 
 add_library(glad vendor/glad/src/glad.c)
