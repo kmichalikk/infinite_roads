@@ -11,6 +11,7 @@
 #include "render_nodes/highlight.h"
 #include "render_nodes/racetrack_blueprint.h"
 #include "render_nodes/render_node.h"
+#include "render_nodes/road.h"
 
 class Game {
 private:
@@ -21,6 +22,7 @@ private:
     std::shared_ptr<Highlight> highlight;
     std::shared_ptr<RacetrackBlueprint> racetrackBlueprint;
     std::shared_ptr<Car> car;
+    std::shared_ptr<Road> road;
     SplineInterpolation interpolation;
     std::vector<std::shared_ptr<RenderNode>> renderNodes;
 

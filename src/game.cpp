@@ -106,6 +106,7 @@ void Game::registerRenderNodes() {
     eventDispatcher.subscribe(EventType::MOUSEBUTTON, [this](void * event){ raycastClick(event); });
 
     car = std::make_shared<Car>(); // only create, will be added after racetrack is finished
+    road = std::make_shared<Road>(); // only create, will be added after racetrack is finished
 }
 
 void Game::raycastClick(void *mouseButtonEvent) {
@@ -114,7 +115,9 @@ void Game::raycastClick(void *mouseButtonEvent) {
         if (racetrackBlueprint->snapToFirst(highlight.get())) {
             interpolation = racetrackBlueprint->finish();
             car->setPosition(interpolation.samplePosition(0.0));
-            renderNodes.push_back(car);
+            road->sampleFrom(interpolation);
+            renderNodes.insert(renderNodes.begin(), road);
+            renderNodes.insert(renderNodes.begin(), car);
         } else {
             racetrackBlueprint->addInterpolationNode(camera.getRayIntersection(config));
         }
