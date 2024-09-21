@@ -8,7 +8,8 @@
 #include "glm/ext/matrix_transform.hpp"
 
 Road::Road() {
-    shader = ResourceManager::getShader("color");
+    shader = ResourceManager::getShader("road");
+    texture = ResourceManager::getTexture("asphalt");
 }
 
 void Road::sampleFrom(SplineInterpolation &interpolation) {
@@ -17,71 +18,109 @@ void Road::sampleFrom(SplineInterpolation &interpolation) {
     float t = 0.0f;
     glm::vec3 currentCenter = interpolation.samplePosition(t);
     glm::vec3 currentNormal = interpolation.sampleNormal(t) * 0.5f;
-    lastRight = currentCenter + currentNormal;
-    lastLeft = currentCenter - currentNormal;
+
+    glm::vec3 lastCenter = currentCenter;
+    glm::vec3 lastRight = currentCenter - currentNormal;
+    glm::vec3 lastLeft = currentCenter + currentNormal;
+
+    float distance = 0.0f;
+    float stepDistance;
     glm::vec3 currentRight, currentLeft;
     t += step;
     for (int i = 0; i < SAMPLE_SIZE; i++) {
-        int k = i * 18;
+        int k = i * FLOATS_PER_STEP;
         currentCenter = interpolation.samplePosition(t);
         currentNormal = interpolation.sampleNormal(t) * 0.5f;
         currentLeft = currentCenter + currentNormal;
         currentRight = currentCenter - currentNormal;
 
+        stepDistance = glm::length(currentCenter - lastCenter);
+
         vertexData[k] = lastRight.x;
         vertexData[k+1] = lastRight.y;
         vertexData[k+2] = lastRight.z;
+        vertexData[k+3] = 0.5f;
+        vertexData[k+4] = distance;
 
-        vertexData[k+3] = lastLeft.x;
-        vertexData[k+4] = lastLeft.y;
-        vertexData[k+5] = lastLeft.z;
+        vertexData[k+5] = currentRight.x;
+        vertexData[k+6] = currentRight.y;
+        vertexData[k+7] = currentRight.z;
+        vertexData[k+8] = 0.5f;
+        vertexData[k+9] = distance + stepDistance;
 
-        vertexData[k+6] = currentRight.x;
-        vertexData[k+7] = currentRight.y;
-        vertexData[k+8] = currentRight.z;
+        vertexData[k+10] = lastLeft.x;
+        vertexData[k+11] = lastLeft.y;
+        vertexData[k+12] = lastLeft.z;
+        vertexData[k+13] = 0.0f;
+        vertexData[k+14] = distance;
 
-        vertexData[k+9] = currentRight.x;
-        vertexData[k+10] = currentRight.y;
-        vertexData[k+11] = currentRight.z;
+        vertexData[k+15] = currentRight.x;
+        vertexData[k+16] = currentRight.y;
+        vertexData[k+17] = currentRight.z;
+        vertexData[k+18] = 0.5f;
+        vertexData[k+19] = distance + stepDistance;
 
-        vertexData[k+12] = currentLeft.x;
-        vertexData[k+13] = currentLeft.y;
-        vertexData[k+14] = currentLeft.z;
+        vertexData[k+20] = currentLeft.x;
+        vertexData[k+21] = currentLeft.y;
+        vertexData[k+22] = currentLeft.z;
+        vertexData[k+23] = 0.0f;
+        vertexData[k+24] = distance + stepDistance;
 
-        vertexData[k+15] = lastRight.x;
-        vertexData[k+16] = lastRight.y;
-        vertexData[k+17] = lastRight.z;
+        vertexData[k+25] = lastLeft.x;
+        vertexData[k+26] = lastLeft.y;
+        vertexData[k+27] = lastLeft.z;
+        vertexData[k+28] = 0.0f;
+        vertexData[k+29] = distance;
 
-        lastRight = currentLeft;
-        lastLeft = currentRight;
+        lastRight = currentRight;
+        lastLeft = currentLeft;
+        lastCenter = currentCenter;
+        distance += stepDistance;
         t += step;
     }
 
-    int size = SAMPLE_SIZE * 18;
+    int size = SAMPLE_SIZE * FLOATS_PER_STEP;
 
-    vertexData[size-18] = vertexData[size-21];
-    vertexData[size-17] = vertexData[size-20];
-    vertexData[size-16] = vertexData[size-19];
+    currentCenter = interpolation.samplePosition(t);
+    stepDistance = glm::length(currentCenter - lastCenter);
 
-    vertexData[size-15] = vertexData[size-24];
-    vertexData[size-14] = vertexData[size-23];
-    vertexData[size-13] = vertexData[size-22];
+    // lastRight
+    vertexData[size-30] = vertexData[size-45];
+    vertexData[size-29] = vertexData[size-44];
+    vertexData[size-28] = vertexData[size-43];
+    vertexData[size-27] = vertexData[size-42];
+    vertexData[size-26] = distance;
 
+    // currentRight
+    vertexData[size-25] = vertexData[0];
+    vertexData[size-24] = vertexData[1];
+    vertexData[size-23] = vertexData[2];
+    vertexData[size-22] = vertexData[3];
+    vertexData[size-21] = distance + stepDistance;
+
+    vertexData[size-20] = vertexData[size-40];
+    vertexData[size-19] = vertexData[size-39];
+    vertexData[size-18] = vertexData[size-38];
+    vertexData[size-17] = vertexData[size-37];
+    vertexData[size-16] = distance;
+
+    vertexData[size-15] = vertexData[0];
+    vertexData[size-14] = vertexData[1];
+    vertexData[size-13] = vertexData[2];
     vertexData[size-12] = vertexData[3];
-    vertexData[size-11] = vertexData[4];
-    vertexData[size-10] = vertexData[5];
+    vertexData[size-11] = distance + stepDistance;
 
-    vertexData[size-9] = vertexData[3];
-    vertexData[size-8] = vertexData[4];
-    vertexData[size-7] = vertexData[5];
+    vertexData[size-10] = vertexData[10];
+    vertexData[size-9] = vertexData[11];
+    vertexData[size-8] = vertexData[12];
+    vertexData[size-7] = vertexData[13];
+    vertexData[size-6] = distance + stepDistance;
 
-    vertexData[size-6] = vertexData[0];
-    vertexData[size-5] = vertexData[1];
-    vertexData[size-4] = vertexData[2];
-
-    vertexData[size-3] = vertexData[size-21];
-    vertexData[size-2] = vertexData[size-20];
-    vertexData[size-1] = vertexData[size-19];
+    vertexData[size-5] = vertexData[size-40];
+    vertexData[size-4] = vertexData[size-39];
+    vertexData[size-3] = vertexData[size-38];
+    vertexData[size-2] = vertexData[size-37];
+    vertexData[size-1] = distance;
 
     glGenVertexArrays(1, &VAO);
     unsigned int VBO;
@@ -91,7 +130,9 @@ void Road::sampleFrom(SplineInterpolation &interpolation) {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(vertexData[0]), static_cast<void *>(nullptr));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), static_cast<void *>(nullptr));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void *>(3 * sizeof(float)));
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -103,6 +144,8 @@ void Road::draw(double dt) {
         ERROR("ROAD", "No vertex data for draw() call");
         return;
     }
+
+    texture.bind();
 
     glBindVertexArray(VAO);
     glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.01f, 0.0f));

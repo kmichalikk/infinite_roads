@@ -55,8 +55,6 @@ SplineInterpolation::SplineInterpolation(const std::vector<glm::vec3> &nodes) {
         glm::vec3 normal = glm::normalize(glm::cross(up, tangent));
         normalSamples.emplace_back(ParameterSpaceValue<glm::vec3>{ u, normal });
 
-        std::cout << u << "   " << normal.x << ", " << normal.y << ", " << normal.z << std::endl;
-
         u += step;
     }
 }

@@ -146,6 +146,7 @@ void Game::initialize() {
     ResourceManager::loadShader("blueprint");
     ResourceManager::loadShader("highlight");
     ResourceManager::loadShader("color");
+    ResourceManager::loadShader("road");
 
     ResourceManager::loadTexture("asphalt");
     ResourceManager::loadTexture("grass");
