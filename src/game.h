@@ -7,6 +7,7 @@
 
 #include "camera.h"
 #include "game_config.h"
+#include "render_nodes/ground.h"
 #include "render_nodes/car.h"
 #include "render_nodes/highlight.h"
 #include "render_nodes/racetrack_blueprint.h"
@@ -23,6 +24,7 @@ private:
     std::shared_ptr<RacetrackBlueprint> racetrackBlueprint;
     std::shared_ptr<Car> car;
     std::shared_ptr<Road> road;
+    std::shared_ptr<Ground> ground;
     SplineInterpolation interpolation;
     std::vector<std::shared_ptr<RenderNode>> renderNodes;
 

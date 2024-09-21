@@ -2,12 +2,16 @@
 
 #include <fstream>
 #include <sstream>
+#include <stb_image.h>
 
 #include "macros.h"
+#include "GLFW/glfw3.h"
 
 const std::string SHADERS_DIR = "../assets/shaders/";
+const std::string TEXTURES_DIR = "../assets/textures/";
 
 std::map<std::string, Shader> ResourceManager::shaders;
+std::map<std::string, Texture> ResourceManager::textures;
 
 Shader ResourceManager::loadShader(std::string name, std::string vertexFileName, std::string fragmentFileName) {
     std::string vertexSource = readShaderFile(SHADERS_DIR + vertexFileName);
@@ -43,9 +47,33 @@ std::string ResourceManager::readShaderFile(std::string fileName) {
         }
     } else {
         ERROR("IO", "Failed to read file \"" + fileName + "\"");
+        glfwTerminate();
     }
 
     fin.close();
 
     return readStream.str();
+}
+
+Texture ResourceManager::loadTexture(std::string name) {
+    std::string path = TEXTURES_DIR + "/" + name + "/color.jpg";
+    int width, height, channelCount;
+    unsigned char *data = stbi_load(path.c_str(), &width, &height, &channelCount, 0);
+    if (data == nullptr) {
+        ERROR("IO", "Failed to load texture from \"" + path + "\"");
+        glfwTerminate();
+    }
+
+    textures[name] = Texture{width, height, data};
+    stbi_image_free(data);
+
+    return textures[name];
+}
+
+Texture ResourceManager::getTexture(std::string name) {
+    if (textures.find(name) == textures.end()) {
+        ERROR("RESOURCE", "Texture \"" + name + "\" not found");
+    }
+
+    return textures[name];
 }

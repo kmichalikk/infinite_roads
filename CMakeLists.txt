@@ -29,7 +29,9 @@ FetchContent_MakeAvailable(glfw glm Eigen3)
 
 # https://stackoverflow.com/questions/77210209
 if(NOT TARGET Eigen3::Eigen)
-    add_library(Eigen3::Eigen INTERFACE IMPORTED)
+    add_library(Eigen3::Eigen INTERFACE IMPORTED
+        vendor/stb_image/impl.cpp
+        vendor/stb_image/impl.cpp)
     set_target_properties(Eigen3::Eigen PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${eigen3_SOURCE_DIR})
 endif()
 
@@ -45,8 +47,8 @@ add_executable(racetrack_builder src/main.cpp
     src/resource_manager.h
     src/shader.cpp
     src/shader.h
-    src/render_nodes/blueprint.cpp
-    src/render_nodes/blueprint.h
+    src/render_nodes/Ground.cpp
+    src/render_nodes/Ground.h
     src/camera.cpp
     src/camera.h
     src/events/event_dispatcher.cpp
@@ -63,10 +65,15 @@ add_executable(racetrack_builder src/main.cpp
     src/render_nodes/car.h
     src/render_nodes/road.cpp
     src/render_nodes/road.h
+    src/texture.cpp
+    src/texture.h
 )
 
 add_library(glad vendor/glad/src/glad.c)
 target_include_directories(glad SYSTEM PUBLIC vendor/glad/include)
+
+add_library(stb_image vendor/stb_image/impl.cpp)
+target_include_directories(stb_image SYSTEM PUBLIC vendor/stb_image)
 
 target_link_libraries(
     racetrack_builder
@@ -74,4 +81,5 @@ target_link_libraries(
     glfw
     glm
     Eigen3::Eigen
+    stb_image
 )

@@ -5,7 +5,7 @@
 #include "events/event_dispatcher.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
-#include "render_nodes/blueprint.h"
+#include "render_nodes/ground.h"
 #include "render_nodes/probe.h"
 
 Game::Game(int screenWidth, int screenHeight) {
@@ -95,7 +95,8 @@ bool Game::initializeLibraries() {
 }
 
 void Game::registerRenderNodes() {
-    renderNodes.push_back(std::make_shared<Blueprint>(100));
+    ground = std::make_shared<Ground>(100);
+    renderNodes.push_back(ground);
     renderNodes.push_back(std::make_shared<Probe>(glm::vec3(0.0, 0.5, 0.0)));
 
     highlight = std::make_shared<Highlight>(glm::vec3(0.5f, 0.6f, 0.8f));
@@ -146,6 +147,9 @@ void Game::initialize() {
     ResourceManager::loadShader("highlight");
     ResourceManager::loadShader("color");
 
+    ResourceManager::loadTexture("asphalt");
+    ResourceManager::loadTexture("grass");
+
     registerRenderNodes();
 
     lastFrameTime = glfwGetTime();
@@ -179,6 +183,7 @@ void Game::startMainLoop() {
             float t = slowTime - (int) slowTime;
             car->setPosition(interpolation.samplePosition(t));
             car->setNormal(interpolation.sampleNormal(t));
+            ground->toggleBlueprint();
         }
 
         camera.update(deltaTime);
