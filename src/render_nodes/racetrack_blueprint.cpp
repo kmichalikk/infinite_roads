@@ -27,13 +27,13 @@ void RacetrackBlueprint::draw(double dt) {
     }
 }
 
-void RacetrackBlueprint::setShaderViewMatrix(glm::mat4 view) const {
+void RacetrackBlueprint::setShaderViewMatrix(glm::mat4 view) {
     for (auto node : interpolationNodes) {
         node.setShaderViewMatrix(view);
     }
 }
 
-void RacetrackBlueprint::setShaderProjectionMatrix(glm::mat4 projection) const {
+void RacetrackBlueprint::setShaderProjectionMatrix(glm::mat4 projection) {
     for (auto node : interpolationNodes) {
         node.setShaderProjectionMatrix(projection);
     }

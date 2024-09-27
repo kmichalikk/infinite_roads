@@ -6,6 +6,7 @@
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "render_nodes/ground.h"
+#include "render_nodes/model.h"
 #include "render_nodes/probe.h"
 
 Game::Game(int screenWidth, int screenHeight) {
@@ -147,6 +148,7 @@ void Game::initialize() {
     ResourceManager::loadShader("highlight");
     ResourceManager::loadShader("color");
     ResourceManager::loadShader("road");
+    ResourceManager::loadShader("car");
 
     ResourceManager::loadTexture("asphalt");
     ResourceManager::loadTexture("grass");

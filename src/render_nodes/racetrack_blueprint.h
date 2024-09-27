@@ -14,8 +14,8 @@ private:
 public:
     void addInterpolationNode(glm::vec3 position);
     void draw(double dt) override;
-    void setShaderViewMatrix(glm::mat4 view) const override;
-    void setShaderProjectionMatrix(glm::mat4 projection) const override;
+    void setShaderViewMatrix(glm::mat4 view) override;
+    void setShaderProjectionMatrix(glm::mat4 projection) override;
     bool snapToFirst(Highlight *highlight);
     SplineInterpolation finish();
     bool finished() const { return loopMade; }

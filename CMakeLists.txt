@@ -6,6 +6,8 @@ project(racetrack_builder)
 
 set(CMAKE_CXX_STANDARD 17)
 
+set(CMAKE_CXX_FLAGS "-Wno-unknown-pragmas")
+
 FetchContent_Declare(
     glfw
     GIT_REPOSITORY https://github.com/glfw/glfw.git
@@ -18,14 +20,20 @@ FetchContent_Declare(
     GIT_TAG 0af55ccecd98d4e5a8d1fad7de25ba429d60e863
     SYSTEM
 )
-
+# https://stackoverflow.com/questions/77210209
 FetchContent_Declare(
     Eigen3 SYSTEM
     GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
     GIT_TAG 3147391d946bb4b6c68edd901f2add6ac1f31f8c
     SOURCE_SUBDIR nonexistent_do_not_configure_make_targets
 )
-FetchContent_MakeAvailable(glfw glm Eigen3)
+FetchContent_Declare(
+    assimp
+    GIT_REPOSITORY https://github.com/assimp/assimp.git
+    GIT_TAG c35200e38ea8f058812b83de2ef32c6093b0ece2
+    SYSTEM
+)
+FetchContent_MakeAvailable(glfw glm Eigen3 assimp)
 
 # https://stackoverflow.com/questions/77210209
 if(NOT TARGET Eigen3::Eigen)
@@ -67,6 +75,10 @@ add_executable(racetrack_builder src/main.cpp
     src/render_nodes/road.h
     src/texture.cpp
     src/texture.h
+    src/render_nodes/mesh.cpp
+    src/render_nodes/mesh.h
+    src/render_nodes/model.cpp
+    src/render_nodes/model.h
 )
 
 add_library(glad vendor/glad/src/glad.c)
@@ -82,4 +94,5 @@ target_link_libraries(
     glm
     Eigen3::Eigen
     stb_image
+    assimp
 )
