@@ -5,7 +5,7 @@
 #include "glm/vec4.hpp"
 
 template<typename T>
-struct ParameterSpaceValue {
+struct InterpolationNode {
     float t;
     T value;
 };
@@ -19,18 +19,19 @@ struct QubicCoeff {
 
 class SplineInterpolation {
 private:
-    static const float SCALE;
-    std::vector<ParameterSpaceValue<glm::vec3>> samples;
-    std::vector<ParameterSpaceValue<glm::vec3>> normalSamples;
+    float totalLength = 0.0f;
+    std::vector<InterpolationNode<glm::vec3>> samples;
+    std::vector<InterpolationNode<glm::vec3>> normalSamples;
 
     static std::vector<float> calculateChordalLength(const std::vector<glm::vec3> &nodes);
-    static std::vector<ParameterSpaceValue<float[3]>> chordalLenghtToParameterSpace(const std::vector<glm::vec3> &nodes, std::vector<float> chords);
-    static std::vector<ParameterSpaceValue<QubicCoeff>> solveAxis(std::vector<ParameterSpaceValue<float[3]>> parameterSpaceValues, int axis);
+    std::vector<InterpolationNode<glm::vec3>> makeInterpolationNodes(const std::vector<glm::vec3> &nodes, std::vector<float> chords) const;
+    static std::vector<InterpolationNode<QubicCoeff>> solveAxis(std::vector<InterpolationNode<glm::vec3>> interpolationNodes, int axis);
     int bisectSamples(float t) const;
     glm::vec3 sample(float t, bool normal);
 public:
     SplineInterpolation();
-    explicit SplineInterpolation(const std::vector<glm::vec3> &nodes);
+    float getTotalLength() const { return totalLength; }
+    explicit SplineInterpolation(const std::vector<glm::vec3> &nodesPositions);
     glm::vec3 samplePosition(float t);
     glm::vec3 sampleNormal(float t);
 };

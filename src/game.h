@@ -20,6 +20,7 @@ private:
     GLFWwindow* window;
     Camera camera;
     double lastFrameTime;
+    double trackPosition = 0.0f;
     std::shared_ptr<Highlight> highlight;
     std::shared_ptr<RacetrackBlueprint> racetrackBlueprint;
     std::shared_ptr<Car> car;

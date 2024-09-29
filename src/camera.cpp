@@ -78,7 +78,7 @@ void Camera::update(double dt) {
         scrollSpeed *= 0.5;
     }
 
-    glm::vec3 newOffsetVector = offsetVector + offsetVector * scrollSpeed * (float) dt;
+    glm::vec3 newOffsetVector = offsetVector - offsetVector * scrollSpeed * (float) dt;
 
     if (newOffsetVector.y > 5 && newOffsetVector.y < 40) {
         offsetVector = newOffsetVector;

@@ -176,17 +176,17 @@ void Game::startMainLoop() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         double currentFrameTime = glfwGetTime();
-        double deltaTime = lastFrameTime - currentFrameTime;
+        double deltaTime = currentFrameTime - lastFrameTime;
         lastFrameTime = currentFrameTime;
 
         highlight->setPosition(camera.getRayIntersection(config));
         racetrackBlueprint->snapToFirst(highlight.get());
 
         if (racetrackBlueprint->finished()) {
-            float slowTime = glfwGetTime() / 10;
-            float t = slowTime - (int) slowTime;
-            car->setPosition(interpolation.samplePosition(t));
-            car->setNormal(interpolation.sampleNormal(t));
+            trackPosition += deltaTime * 5;
+            trackPosition = fmod(trackPosition, interpolation.getTotalLength());
+            car->setPosition(interpolation.samplePosition(trackPosition));
+            car->setNormal(interpolation.sampleNormal(trackPosition));
             ground->toggleBlueprint();
         }
 
