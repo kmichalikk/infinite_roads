@@ -7,10 +7,8 @@
 #include "../resource_manager.h"
 #include "glm/ext/matrix_transform.hpp"
 
-Highlight::Highlight(glm::vec3 color)
-    : position(0.0f), color(color) {
-    shader = ResourceManager::getShader("highlight");
-
+Highlight::Highlight(glm::vec3 color, std::string name)
+    : RenderNode(name, "highlight"), color(color) {
     float points[288];
     float theta = 2 * M_PI / 12;
     for (int i = 0; i < 12; i++) {
@@ -65,10 +63,11 @@ Highlight::Highlight(glm::vec3 color)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Highlight::draw(double dt) {
+void Highlight::doDraw(double dt, glm::mat4 *parentTransform) {
     glBindVertexArray(VAO);
 
-    glm::mat4 model = glm::scale(glm::translate(glm::mat4(1.0f), position), glm::vec3(0.3f));
+    glm::mat4 model = glm::translate(*parentTransform, getPosition());
+    model = glm::scale(model, glm::vec3(0.3f));
     shader.setMat4("model", model);
     shader.setVec3f("highlightColor", color);
 

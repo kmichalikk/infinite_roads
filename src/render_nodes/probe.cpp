@@ -7,8 +7,8 @@
 #include "glm/ext/matrix_transform.hpp"
 
 Probe::Probe(glm::vec3 position)
-    : position(position) {
-    shader = ResourceManager::getShader("probe");
+    : RenderNode("probe") {
+    setPosition(position);
     init();
 }
 
@@ -74,18 +74,22 @@ void Probe::init() {
     glBindVertexArray(0);
 }
 
-void Probe::drawWorldDirections(glm::vec3 direction) {
+void Probe::drawWorldDirections(glm::vec3 direction, glm::mat4 *parentTransform) {
     glm::vec3 scale = 0.5f * direction + glm::vec3(0.08f);
-    glm::mat4 model = glm::scale(glm::translate(glm::mat4(1.0f), position + 0.4f * direction), scale);
+    glm::mat4 model = glm::translate(*parentTransform, getPosition() + 0.4f * direction);
+    model = glm::scale(model, scale);
+
     shader.setVec3f("overrideColor", direction);
     shader.setMat4("model", model);
+
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
-void Probe::draw(double dt) {
+void Probe::doDraw(double dt, glm::mat4 *parentTransform) {
     glBindVertexArray(VAO);
 
-    glm::mat4 model = glm::scale(glm::translate(glm::mat4(1.0f), position), glm::vec3(0.3f));
+    glm::mat4 model = glm::translate(*parentTransform, getPosition());
+    model = glm::scale(model, glm::vec3(0.3f));
     shader.setMat4("model", model);
     shader.setInt("skipNormal", 0);
     shader.setVec3f("overrideColor", glm::vec3(0.0));
@@ -93,9 +97,9 @@ void Probe::draw(double dt) {
 
     shader.setInt("skipNormal", 1);
 
-    drawWorldDirections(glm::vec3(1, 0, 0));
-    drawWorldDirections(glm::vec3(0, 1, 0));
-    drawWorldDirections(glm::vec3(0, 0, 1));
+    drawWorldDirections(glm::vec3(1, 0, 0), parentTransform);
+    drawWorldDirections(glm::vec3(0, 1, 0), parentTransform);
+    drawWorldDirections(glm::vec3(0, 0, 1), parentTransform);
 
     glBindVertexArray(0);
 }

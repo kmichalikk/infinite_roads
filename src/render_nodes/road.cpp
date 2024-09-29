@@ -7,8 +7,8 @@
 #include "../resource_manager.h"
 #include "glm/ext/matrix_transform.hpp"
 
-Road::Road() {
-    shader = ResourceManager::getShader("road");
+Road::Road()
+    : RenderNode("road") {
     texture = ResourceManager::getTexture("asphalt");
 }
 
@@ -139,7 +139,7 @@ void Road::sampleFrom(SplineInterpolation &interpolation) {
     sampled = true;
 }
 
-void Road::draw(double dt) {
+void Road::doDraw(double dt, glm::mat4 *parentTransform) {
     if (!sampled) {
         ERROR("ROAD", "No vertex data for draw() call");
         return;
@@ -148,7 +148,7 @@ void Road::draw(double dt) {
     texture.bind();
 
     glBindVertexArray(VAO);
-    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.01f, 0.0f));
+    glm::mat4 model = glm::translate(*parentTransform, glm::vec3(0.0f, 0.01f, 0.0f));
     shader.setMat4("model", model);
     shader.setVec3f("baseColor", glm::vec3(0.6f));
     glDrawArrays(GL_TRIANGLES, 0, SAMPLE_SIZE * 6);

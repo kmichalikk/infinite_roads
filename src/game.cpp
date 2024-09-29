@@ -100,7 +100,8 @@ void Game::registerRenderNodes() {
     renderNodes.push_back(ground);
     renderNodes.push_back(std::make_shared<Probe>(glm::vec3(0.0, 0.5, 0.0)));
 
-    highlight = std::make_shared<Highlight>(glm::vec3(0.5f, 0.6f, 0.8f));
+    highlight = std::make_shared<Highlight>(glm::vec3(0.5f, 0.6f, 0.8f), "highlightCursor");
+
     renderNodes.push_back(highlight);
 
     racetrackBlueprint = std::make_shared<RacetrackBlueprint>();
@@ -190,12 +191,10 @@ void Game::startMainLoop() {
         }
 
         camera.update(deltaTime);
+        glm::mat4 viewMatrix = camera.getViewMatrix();
 
         for (const auto &node : renderNodes) {
-            node->prepare();
-            node->setShaderProjectionMatrix(config.projectionMatrix);
-            node->setShaderViewMatrix(camera.getViewMatrix());
-            node->draw(deltaTime);
+            node->draw(deltaTime, &config.projectionMatrix, &viewMatrix);
         }
 
         glfwSwapBuffers(window);

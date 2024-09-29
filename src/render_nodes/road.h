@@ -15,5 +15,5 @@ private:
 public:
     Road();
     void sampleFrom(SplineInterpolation &interpolation);
-    void draw(double dt) override;
+    void doDraw(double dt, glm::mat4 *parentTransform) override;
 };

@@ -6,12 +6,9 @@
 class Highlight : public RenderNode {
 private:
     unsigned int VAO;
-    glm::vec3 position;
     glm::vec3 color;
 public:
-    Highlight(glm::vec3 color);
-    void setPosition(glm::vec3 position) { this->position = position; }
-    glm::vec3 getPosition() const { return this->position; }
+    Highlight(glm::vec3 color, std::string name);
     void setColor(glm::vec3 color) { this->color = color; }
-    void draw(double dt) override;
+    void doDraw(double dt, glm::mat4 *parentTransform) override;
 };

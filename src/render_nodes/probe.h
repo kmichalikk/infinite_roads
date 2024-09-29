@@ -5,11 +5,10 @@
 
 class Probe: public RenderNode {
 private:
-    glm::vec3 position;
     unsigned int VAO;
     void init();
-    void drawWorldDirections(glm::vec3 direction);
+    void drawWorldDirections(glm::vec3 direction, glm::mat4 *parentTransform);
 public:
-    Probe(glm::vec3 position);
-    void draw(double dt) override;
+    explicit Probe(glm::vec3 position);
+    void doDraw(double dt, glm::mat4 *parentTransform) override;
 };

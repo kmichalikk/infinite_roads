@@ -1,10 +1,17 @@
 #include "model.h"
 
 #include <stb_image.h>
+#include <Eigen/Core>
 
 #include "../macros.h"
 #include "assimp/postprocess.h"
 #include "../texture.h"
+
+Model::Model(std::string name, std::string shaderName, const char *path)
+    : RenderNode(name, shaderName), shaderName(shaderName) {
+    loadModel(path);
+}
+
 
 void Model::loadModel(std::string path) {
     Assimp::Importer importer;
@@ -22,7 +29,7 @@ void Model::processNode(aiNode *node, const aiScene *scene) {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
         // assuming model nodes are one level deep, todo: combine positions from all parent nodes
         glm::vec3 offsetPosition(node->mTransformation.a4, node->mTransformation.b4, node->mTransformation.c4);
-        meshes.push_back(processMesh(mesh, scene, offsetPosition));
+        addChild(std::make_shared<Mesh>(processMesh(mesh, scene, offsetPosition)));
     }
 
     for (unsigned int i = 0; i < node->mNumChildren; i++) {
@@ -70,7 +77,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene, glm::vec3 offsetPosi
 
     std::vector<Texture> diffuseTextures = loadMaterialTextures(scene, material, aiTextureType_DIFFUSE, "texture_diffuse");
 
-    Mesh finishedMesh(vertices, indices, diffuseTextures);
+    Mesh finishedMesh(mesh->mName.C_Str(), shaderName, vertices, indices, diffuseTextures);
     finishedMesh.setPosition(offsetPosition);
 
     return finishedMesh;
@@ -97,30 +104,4 @@ std::vector<Texture> Model::loadMaterialTextures(const aiScene *scene, aiMateria
     }
 
     return textures;
-}
-
-Model::Model(const char *path) {
-    loadModel(path);
-}
-
-void Model::draw(double dt) {
-    for (auto mesh : meshes) {
-        mesh.setParentRotation(rotation);
-        mesh.setParentPosition(position);
-        mesh.prepare();
-        mesh.setShaderProjectionMatrix(projectionMatrix);
-        mesh.setShaderViewMatrix(viewMatrix);
-        mesh.draw(dt);
-    }
-}
-
-void Model::setShaderProjectionMatrix(glm::mat4 projection) {
-    projectionMatrix = projection;
-}
-
-void Model::setShaderViewMatrix(glm::mat4 view) {
-    viewMatrix = view;
-}
-
-void Model::prepare() {
 }

@@ -10,41 +10,26 @@ void RacetrackBlueprint::addInterpolationNode(glm::vec3 position) {
         return;
     }
 
-    Highlight highlight(glm::vec3(1.0f));
-    highlight.setPosition(position);
-    interpolationNodes.push_back(highlight);
+    std::shared_ptr<Highlight> highlight = std::make_shared<Highlight>(
+        glm::vec3(1.0f),
+        "highlight" + std::to_string(getChildCount())
+    );
+    highlight->setPosition(position);
+    addChild(highlight);
+    positions.push_back(position);
 
-    if (interpolationNodes.size() == 4) {
+    if (getChildCount() == 4) {
         loopPossible = true;
-        interpolationNodes.at(0).setColor(glm::vec3(0.57, 0.9, 0.3));
-    }
-}
-
-void RacetrackBlueprint::draw(double dt) {
-    for (auto node : interpolationNodes) {
-        node.prepare();
-        node.draw(dt);
-    }
-}
-
-void RacetrackBlueprint::setShaderViewMatrix(glm::mat4 view) {
-    for (auto node : interpolationNodes) {
-        node.setShaderViewMatrix(view);
-    }
-}
-
-void RacetrackBlueprint::setShaderProjectionMatrix(glm::mat4 projection) {
-    for (auto node : interpolationNodes) {
-        node.setShaderProjectionMatrix(projection);
+        std::static_pointer_cast<Highlight>(getChild("highlight0"))->setColor(glm::vec3(0.57, 0.9, 0.3));
     }
 }
 
 bool RacetrackBlueprint::snapToFirst(Highlight *highlight) {
-    if (!loopPossible || interpolationNodes.size() == 0) {
+    if (!loopPossible || getChildCount() == 0) {
         return false;
     }
 
-    glm::vec3 firstPosition = interpolationNodes.at(0).getPosition();
+    glm::vec3 firstPosition = getChild("highlight0")->getPosition();
     if (glm::length(highlight->getPosition() - firstPosition) < 0.5) {
         highlight->setPosition(firstPosition);
 
@@ -59,14 +44,8 @@ SplineInterpolation RacetrackBlueprint::finish() {
         throw "invalid state";
     }
 
-    interpolationNodes.at(0).setColor(glm::vec3(1.0f));
-    std::vector<glm::vec3> nodes;
-    std::transform(
-        interpolationNodes.begin(),
-        interpolationNodes.end(),
-        std::back_inserter(nodes), [](const Highlight &h) { return h.getPosition(); }
-    );
-    SplineInterpolation interpolation(nodes);
+    std::static_pointer_cast<Highlight>(getChild("highlight0"))->setColor(glm::vec3(1.0f));
+    SplineInterpolation interpolation(positions);
     loopMade = true;
 
     return interpolation;

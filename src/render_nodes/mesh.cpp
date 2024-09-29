@@ -3,13 +3,11 @@
 #include <utility>
 #include <glad/glad.h>
 
-#include "../macros.h"
 #include "../resource_manager.h"
 #include "glm/ext/matrix_transform.hpp"
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures)
-    : vertices(std::move(vertices)), indices(std::move(indices)), textures(std::move(textures)) {
-    shader = ResourceManager::getShader("car");
+Mesh::Mesh(std::string name, std::string shaderName, std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures)
+    : RenderNode(name, shaderName), vertices(std::move(vertices)), indices(std::move(indices)), textures(std::move(textures)) {
     setupMesh();
 }
 
@@ -34,7 +32,7 @@ void Mesh::setupMesh() {
     glBindVertexArray(0);
 }
 
-void Mesh::draw(double dt) {
+void Mesh::doDraw(double dt, glm::mat4 *parentTransform) {
     unsigned int diffuseNr = 1;
     for (unsigned int i = 0; i < textures.size(); i++) {
         glActiveTexture(GL_TEXTURE0 + i);
@@ -43,10 +41,7 @@ void Mesh::draw(double dt) {
         shader.setInt("texture_diffuse" + std::to_string(diffuseNr++), i);
     }
 
-    glm::mat4 model(1.0);
-    model = glm::translate(model, parentPosition);
-    model = glm::rotate(model, parentRotation, glm::vec3(0, 1, 0));
-    model = glm::translate(model, position);
+    glm::mat4 model = glm::translate(*parentTransform, getPosition());
     shader.setMat4("model", model);
 
     glBindVertexArray(VAO);

@@ -8,7 +8,7 @@
 #include "glm/gtx/vector_angle.hpp"
 
 Car::Car()
-    : Model("../assets/models/car.glb") {
+    : Model("car", "car", "../assets/models/car.glb") {
 }
 
 void Car::calculateAngles() {
@@ -16,7 +16,7 @@ void Car::calculateAngles() {
     glm::vec2 flatNormal = -glm::normalize(glm::vec2(normal.x, -normal.z));
     normalAngle = glm::orientedAngle(xUnit, flatNormal);
     tangentAngle = normalAngle - M_PI / 2.0f;
-    setRotation(normalAngle);
+    setRotation(glm::vec3(0, normalAngle, 0));
 }
 
 void Car::setNormal(glm::vec3 normal) {

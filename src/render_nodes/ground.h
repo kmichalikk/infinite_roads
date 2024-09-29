@@ -11,6 +11,6 @@ private:
     void init(int canvasSize);
 public:
     explicit Ground(int canvasSize);
-    void draw(double dt) override;
+    void doDraw(double dt, glm::mat4 *parentTransform) override;
     void toggleBlueprint();
 };
