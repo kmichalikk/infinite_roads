@@ -13,10 +13,13 @@ Road::Road()
 }
 
 void Road::sampleFrom(SplineInterpolation &interpolation) {
+    Sampler positionSampler = interpolation.getPositionSampler();
+    Sampler normalSampler = interpolation.getNormalSampler();
+
     float step = interpolation.getTotalLength() / SAMPLE_SIZE;
     float t = 0.0f;
-    glm::vec3 currentCenter = interpolation.samplePosition(t);
-    glm::vec3 currentNormal = interpolation.sampleNormal(t) * 0.5f;
+    glm::vec3 currentCenter = positionSampler.sample(t);
+    glm::vec3 currentNormal = normalSampler.sample(t) * 0.5f;
 
     glm::vec3 lastCenter = currentCenter;
     glm::vec3 lastRight = currentCenter - currentNormal;
@@ -28,8 +31,8 @@ void Road::sampleFrom(SplineInterpolation &interpolation) {
     t += step;
     for (int i = 0; i < SAMPLE_SIZE; i++) {
         int k = i * FLOATS_PER_STEP;
-        currentCenter = interpolation.samplePosition(t);
-        currentNormal = interpolation.sampleNormal(t) * 0.5f;
+        currentCenter = positionSampler.sample(t);
+        currentNormal = normalSampler.sample(t) * 0.5f;
         currentLeft = currentCenter + currentNormal;
         currentRight = currentCenter - currentNormal;
 
@@ -80,7 +83,7 @@ void Road::sampleFrom(SplineInterpolation &interpolation) {
 
     int size = SAMPLE_SIZE * FLOATS_PER_STEP;
 
-    currentCenter = interpolation.samplePosition(t);
+    currentCenter = positionSampler.sample(t);
     stepDistance = glm::length(currentCenter - lastCenter);
 
     // lastRight

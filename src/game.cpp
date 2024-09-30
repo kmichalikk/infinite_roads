@@ -117,7 +117,10 @@ void Game::raycastClick(void *mouseButtonEvent) {
     if (event->button == GLFW_MOUSE_BUTTON_LEFT && event->action == GLFW_PRESS) {
         if (racetrackBlueprint->snapToFirst(highlight.get())) {
             interpolation = racetrackBlueprint->finish();
-            car->setPosition(interpolation.samplePosition(0.0));
+            positionSampler = std::make_shared<Sampler>(interpolation.getPositionSampler());
+            normalSampler = std::make_shared<Sampler>(interpolation.getNormalSampler());
+            car->setPosition(positionSampler->sample(0.0));
+            car->setNormal(normalSampler->sample(0.0));
             road->sampleFrom(interpolation);
             renderNodes.insert(renderNodes.begin(), road);
             renderNodes.insert(renderNodes.begin(), car);
@@ -185,8 +188,8 @@ void Game::startMainLoop() {
         if (racetrackBlueprint->finished()) {
             trackPosition += deltaTime * 5;
             trackPosition = fmod(trackPosition, interpolation.getTotalLength());
-            car->setPosition(interpolation.samplePosition(trackPosition));
-            car->setNormal(interpolation.sampleNormal(trackPosition));
+            car->setPosition(positionSampler->sample(trackPosition));
+            car->setNormal(normalSampler->sample(trackPosition));
             ground->toggleBlueprint();
         }
 

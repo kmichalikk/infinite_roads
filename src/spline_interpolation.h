@@ -1,14 +1,10 @@
 #pragma once
 #include <vector>
 
+#include "interpolation_node.h"
+#include "sampler.h"
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
-
-template<typename T>
-struct InterpolationNode {
-    float t;
-    T value;
-};
 
 struct QubicCoeff {
     float a, b, c, d;
@@ -26,12 +22,10 @@ private:
     static std::vector<float> calculateChordalLength(const std::vector<glm::vec3> &nodes);
     std::vector<InterpolationNode<glm::vec3>> makeInterpolationNodes(const std::vector<glm::vec3> &nodes, std::vector<float> chords) const;
     static std::vector<InterpolationNode<QubicCoeff>> solveAxis(std::vector<InterpolationNode<glm::vec3>> interpolationNodes, int axis);
-    int bisectSamples(float t) const;
-    glm::vec3 sample(float t, bool normal);
 public:
     SplineInterpolation();
-    float getTotalLength() const { return totalLength; }
     explicit SplineInterpolation(const std::vector<glm::vec3> &nodesPositions);
-    glm::vec3 samplePosition(float t);
-    glm::vec3 sampleNormal(float t);
+    float getTotalLength() const { return totalLength; }
+    Sampler getPositionSampler() const { return { samples }; };
+    Sampler getNormalSampler() const { return { normalSamples }; };
 };

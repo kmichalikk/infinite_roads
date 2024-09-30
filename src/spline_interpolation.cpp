@@ -6,6 +6,10 @@
 #include "glm/geometric.hpp"
 #include "Eigen/Sparse"
 
+SplineInterpolation::SplineInterpolation() {
+    samples = { InterpolationNode<glm::vec3>{ 0.0f, glm::vec3() } };
+}
+
 SplineInterpolation::SplineInterpolation(const std::vector<glm::vec3> &nodesPositions) {
     // pair positions with their arc distance from start
     // the distance becomes a parameter t for resulting parametric curve
@@ -164,53 +168,4 @@ std::vector<InterpolationNode<QubicCoeff>> SplineInterpolation::solveAxis(std::v
     }
 
     return results;
-}
-
-int SplineInterpolation::bisectSamples(float t) const {
-    int mid, left = 0;
-    int right = samples.size()-1;
-
-    while (left < right) {
-        mid = (left + right) / 2;
-        if (samples[mid].t < t) {
-            left = mid+1;
-        } else {
-            right = mid;
-        }
-    }
-
-    return mid;
-}
-
-SplineInterpolation::SplineInterpolation() {
-    samples = { InterpolationNode<glm::vec3>{ 0.0f, glm::vec3() } };
-}
-
-glm::vec3 SplineInterpolation::sample(float t, bool normal) {
-    std::vector<InterpolationNode<glm::vec3>> space = normal ? normalSamples : samples;
-
-    int leftmostIndex = bisectSamples(t);
-    if (leftmostIndex+1 == space.size()) {
-        return space[leftmostIndex].value;
-    }
-
-    float diffT = space[leftmostIndex+1].t - space[leftmostIndex].t;
-    float lerpT = (space[leftmostIndex+1].t - t) / diffT;
-
-    glm::vec3 v1 = space[leftmostIndex].value;
-    glm::vec3 v2 = space[leftmostIndex+1].value;
-
-    return {
-        v1.x * lerpT + v2.x * (1-lerpT),
-        v1.y * lerpT + v2.y * (1-lerpT),
-        v1.z * lerpT + v2.z * (1-lerpT)
-    };
-}
-
-glm::vec3 SplineInterpolation::samplePosition(float t) {
-    return sample(t, false);
-}
-
-glm::vec3 SplineInterpolation::sampleNormal(float t) {
-    return sample(t, true);
 }

@@ -79,6 +79,9 @@ add_executable(racetrack_builder src/main.cpp
     src/render_nodes/mesh.h
     src/render_nodes/model.cpp
     src/render_nodes/model.h
+    src/sampler.cpp
+    src/sampler.h
+    src/interpolation_node.h
 )
 
 add_library(glad vendor/glad/src/glad.c)

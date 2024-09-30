@@ -15,5 +15,5 @@ private:
 public:
     Car();
     void setNormal(glm::vec3 normal);
-    void setPosition(glm::vec3 position) { Model::setPosition(position + 0.1f); };
+    void setPosition(glm::vec3 position) { position.y += 0.1f; Model::setPosition(position); };
 };
