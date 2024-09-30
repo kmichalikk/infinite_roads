@@ -18,6 +18,7 @@ private:
     float totalLength = 0.0f;
     std::vector<InterpolationNode<glm::vec3>> samples;
     std::vector<InterpolationNode<glm::vec3>> normalSamples;
+    std::vector<InterpolationNode<float>> curvatureSamples;
 
     static std::vector<float> calculateChordalLength(const std::vector<glm::vec3> &nodes);
     std::vector<InterpolationNode<glm::vec3>> makeInterpolationNodes(const std::vector<glm::vec3> &nodes, std::vector<float> chords) const;
@@ -26,6 +27,7 @@ public:
     SplineInterpolation();
     explicit SplineInterpolation(const std::vector<glm::vec3> &nodesPositions);
     float getTotalLength() const { return totalLength; }
-    Sampler getPositionSampler() const { return { samples }; };
-    Sampler getNormalSampler() const { return { normalSamples }; };
+    Sampler<glm::vec3> getPositionSampler() const { return { samples }; };
+    Sampler<glm::vec3> getNormalSampler() const { return { normalSamples }; };
+    Sampler<float> getCurvatureSampler() const { return { curvatureSamples }; };
 };

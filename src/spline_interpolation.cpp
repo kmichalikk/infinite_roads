@@ -30,6 +30,10 @@ SplineInterpolation::SplineInterpolation(const std::vector<glm::vec3> &nodesPosi
     QubicCoeff yDerivativeCoeff = yCoeff.derivative();
     QubicCoeff zDerivativeCoeff = zCoeff.derivative();
 
+    QubicCoeff xSndDerivativeCoeff = xDerivativeCoeff.derivative();
+    QubicCoeff ySndDerivativeCoeff = yDerivativeCoeff.derivative();
+    QubicCoeff zSndDerivativeCoeff = zDerivativeCoeff.derivative();
+
     // we assume that all roads are perfectly flat
     // so we can calculate normal vector from tangent vector and world up
     glm::vec3 up(0, 1, 0);
@@ -64,9 +68,17 @@ SplineInterpolation::SplineInterpolation(const std::vector<glm::vec3> &nodesPosi
             zDerivativeCoeff.a * pow(u, 2) + zDerivativeCoeff.b * u + zDerivativeCoeff.c
         );
 
-
         glm::vec3 normal = glm::normalize(glm::cross(up, tangent));
         normalSamples.emplace_back(InterpolationNode<glm::vec3>{ (float) u, normal });
+
+        glm::vec3 acceleration(
+            xSndDerivativeCoeff.a * u + xSndDerivativeCoeff.b,
+            ySndDerivativeCoeff.a * u + ySndDerivativeCoeff.b,
+            zSndDerivativeCoeff.a * u + zSndDerivativeCoeff.b
+        );
+
+        float curvature = glm::length(glm::cross(tangent, acceleration)) / pow(glm::length(tangent), 3);
+        curvatureSamples.emplace_back(InterpolationNode<float>{ (float) u, curvature });
 
         u += step;
     }

@@ -117,8 +117,8 @@ void Game::raycastClick(void *mouseButtonEvent) {
     if (event->button == GLFW_MOUSE_BUTTON_LEFT && event->action == GLFW_PRESS) {
         if (racetrackBlueprint->snapToFirst(highlight.get())) {
             interpolation = racetrackBlueprint->finish();
-            positionSampler = std::make_shared<Sampler>(interpolation.getPositionSampler());
-            normalSampler = std::make_shared<Sampler>(interpolation.getNormalSampler());
+            positionSampler = std::make_shared<Sampler<glm::vec3>>(interpolation.getPositionSampler());
+            normalSampler = std::make_shared<Sampler<glm::vec3>>(interpolation.getNormalSampler());
             car->setPosition(positionSampler->sample(0.0));
             car->setNormal(normalSampler->sample(0.0));
             road->sampleFrom(interpolation);
