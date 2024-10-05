@@ -8,6 +8,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_CXX_FLAGS "-Wno-unknown-pragmas")
 
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "" FORCE)
+set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
+
 FetchContent_Declare(
     glfw
     GIT_REPOSITORY https://github.com/glfw/glfw.git
@@ -33,13 +38,14 @@ FetchContent_Declare(
     GIT_TAG c35200e38ea8f058812b83de2ef32c6093b0ece2
     SYSTEM
 )
-FetchContent_MakeAvailable(glfw glm Eigen3 assimp)
+FetchContent_MakeAvailable(glfw)
+FetchContent_MakeAvailable(glm)
+FetchContent_MakeAvailable(Eigen3)
+FetchContent_MakeAvailable(assimp)
 
 # https://stackoverflow.com/questions/77210209
 if(NOT TARGET Eigen3::Eigen)
-    add_library(Eigen3::Eigen INTERFACE IMPORTED
-        vendor/stb_image/impl.cpp
-        vendor/stb_image/impl.cpp)
+    add_library(Eigen3::Eigen INTERFACE IMPORTED)
     set_target_properties(Eigen3::Eigen PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${eigen3_SOURCE_DIR})
 endif()
 
@@ -81,6 +87,8 @@ add_executable(racetrack_builder src/main.cpp
     src/render_nodes/model.h
     src/sampler.h
     src/interpolation_node.h
+    src/render_nodes/debug_vectors.cpp
+    src/render_nodes/debug_vectors.h
 )
 
 add_library(glad vendor/glad/src/glad.c)

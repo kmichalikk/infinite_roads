@@ -5,6 +5,7 @@
 #include "events/event_dispatcher.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
+#include "render_nodes/debug_vectors.h"
 #include "render_nodes/ground.h"
 #include "render_nodes/model.h"
 #include "render_nodes/probe.h"
@@ -124,6 +125,14 @@ void Game::raycastClick(void *mouseButtonEvent) {
             road->sampleFrom(interpolation);
             renderNodes.insert(renderNodes.begin(), road);
             renderNodes.insert(renderNodes.begin(), car);
+
+            std::vector<AnchoredVector> normals;
+            int count = positionSampler->getSampleCount();
+            for (int i = 0; i < count; i++) {
+                normals.push_back({ positionSampler->getNthSample(i).value, normalSampler->getNthSample(i).value });
+            }
+
+            renderNodes.push_back(std::make_shared<DebugVectors>(normals, glm::vec3(1.0f, 0.0f, 0.0f)));
         } else {
             racetrackBlueprint->addInterpolationNode(camera.getRayIntersection(config));
         }
