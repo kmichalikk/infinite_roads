@@ -3,6 +3,7 @@
 #include <iostream>
 #include <numeric>
 
+#include "macros.h"
 #include "glm/geometric.hpp"
 #include "Eigen/Sparse"
 
@@ -30,9 +31,9 @@ SplineInterpolation::SplineInterpolation(const std::vector<glm::vec3> &nodesPosi
     QubicCoeff yDerivativeCoeff = yCoeff.derivative();
     QubicCoeff zDerivativeCoeff = zCoeff.derivative();
 
-    QubicCoeff xSndDerivativeCoeff = xDerivativeCoeff.derivative();
-    QubicCoeff ySndDerivativeCoeff = yDerivativeCoeff.derivative();
-    QubicCoeff zSndDerivativeCoeff = zDerivativeCoeff.derivative();
+    QubicCoeff xSndDerivativeCoeff = xCoeff.sndDerivative();
+    QubicCoeff ySndDerivativeCoeff = yCoeff.sndDerivative();
+    QubicCoeff zSndDerivativeCoeff = zCoeff.sndDerivative();
 
     // we assume that all roads are perfectly flat
     // so we can calculate normal vector from tangent vector and world up
@@ -53,6 +54,9 @@ SplineInterpolation::SplineInterpolation(const std::vector<glm::vec3> &nodesPosi
             xDerivativeCoeff = xCoeff.derivative();
             yDerivativeCoeff = yCoeff.derivative();
             zDerivativeCoeff = zCoeff.derivative();
+            xSndDerivativeCoeff = xCoeff.sndDerivative();
+            ySndDerivativeCoeff = yCoeff.sndDerivative();
+            zSndDerivativeCoeff = zCoeff.sndDerivative();
         }
 
         glm::vec3 sample(
@@ -68,17 +72,17 @@ SplineInterpolation::SplineInterpolation(const std::vector<glm::vec3> &nodesPosi
             zDerivativeCoeff.a * pow(u, 2) + zDerivativeCoeff.b * u + zDerivativeCoeff.c
         );
 
-        glm::vec3 normal = glm::normalize(glm::cross(up, tangent));
-        normalSamples.emplace_back(InterpolationNode<glm::vec3>{ (float) u, normal });
-
         glm::vec3 acceleration(
             xSndDerivativeCoeff.a * u + xSndDerivativeCoeff.b,
             ySndDerivativeCoeff.a * u + ySndDerivativeCoeff.b,
             zSndDerivativeCoeff.a * u + zSndDerivativeCoeff.b
         );
 
-        float curvature = glm::length(glm::cross(tangent, acceleration)) / pow(glm::length(tangent), 3);
-        curvatureSamples.emplace_back(InterpolationNode<float>{ (float) u, curvature });
+        glm::vec3 normal = glm::cross(tangent, glm::cross(acceleration, tangent));
+        normalSamples.emplace_back(InterpolationNode<glm::vec3>{ (float) u, normal });
+
+        glm::vec3 unitNormal = glm::normalize(glm::cross(up, tangent));
+        unitNormalSamples.emplace_back(InterpolationNode<glm::vec3>{ (float) u, unitNormal });
 
         u += step;
     }

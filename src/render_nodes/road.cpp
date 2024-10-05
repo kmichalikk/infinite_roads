@@ -14,7 +14,7 @@ Road::Road()
 
 void Road::sampleFrom(SplineInterpolation &interpolation) {
     Sampler<glm::vec3> positionSampler = interpolation.getPositionSampler();
-    Sampler<glm::vec3> normalSampler = interpolation.getNormalSampler();
+    Sampler<glm::vec3> normalSampler = interpolation.getUnitNormalSampler();
 
     float step = interpolation.getTotalLength() / SAMPLE_SIZE;
     float t = 0.0f;
