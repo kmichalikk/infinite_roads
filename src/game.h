@@ -23,7 +23,6 @@ private:
     double trackPosition = 0.0f;
     std::shared_ptr<Sampler<glm::vec3>> positionSampler;
     std::shared_ptr<Sampler<glm::vec3>> unitNormalSampler;
-    std::shared_ptr<Sampler<glm::vec3>> normalSampler;
     std::shared_ptr<Highlight> highlight;
     std::shared_ptr<RacetrackBlueprint> racetrackBlueprint;
     std::shared_ptr<Car> car;

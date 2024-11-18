@@ -72,15 +72,6 @@ SplineInterpolation::SplineInterpolation(const std::vector<glm::vec3> &nodesPosi
             zDerivativeCoeff.a * pow(u, 2) + zDerivativeCoeff.b * u + zDerivativeCoeff.c
         );
 
-        glm::vec3 acceleration(
-            xSndDerivativeCoeff.a * u + xSndDerivativeCoeff.b,
-            ySndDerivativeCoeff.a * u + ySndDerivativeCoeff.b,
-            zSndDerivativeCoeff.a * u + zSndDerivativeCoeff.b
-        );
-
-        glm::vec3 normal = glm::cross(tangent, glm::cross(acceleration, tangent));
-        normalSamples.emplace_back(InterpolationNode<glm::vec3>{ (float) u, normal });
-
         glm::vec3 unitNormal = glm::normalize(glm::cross(up, tangent));
         unitNormalSamples.emplace_back(InterpolationNode<glm::vec3>{ (float) u, unitNormal });
 

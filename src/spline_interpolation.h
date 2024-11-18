@@ -19,7 +19,6 @@ private:
     float totalLength = 0.0f;
     std::vector<InterpolationNode<glm::vec3>> samples;
     std::vector<InterpolationNode<glm::vec3>> unitNormalSamples;
-    std::vector<InterpolationNode<glm::vec3>> normalSamples;
 
     static std::vector<float> calculateChordalLength(const std::vector<glm::vec3> &nodes);
     std::vector<InterpolationNode<glm::vec3>> makeInterpolationNodes(const std::vector<glm::vec3> &nodes, std::vector<float> chords) const;
@@ -30,5 +29,4 @@ public:
     float getTotalLength() const { return totalLength; }
     Sampler<glm::vec3> getPositionSampler() const { return { samples }; };
     Sampler<glm::vec3> getUnitNormalSampler() const { return { unitNormalSamples }; };
-    Sampler<glm::vec3> getNormalSampler() const { return { normalSamples }; };
 };

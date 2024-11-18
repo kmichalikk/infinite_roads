@@ -120,20 +120,11 @@ void Game::raycastClick(void *mouseButtonEvent) {
             interpolation = racetrackBlueprint->finish();
             positionSampler = std::make_shared<Sampler<glm::vec3>>(interpolation.getPositionSampler());
             unitNormalSampler = std::make_shared<Sampler<glm::vec3>>(interpolation.getUnitNormalSampler());
-            normalSampler = std::make_shared<Sampler<glm::vec3>>(interpolation.getNormalSampler());
             car->setPosition(positionSampler->sample(0.0));
             car->setNormal(unitNormalSampler->sample(0.0));
             road->sampleFrom(interpolation);
             renderNodes.insert(renderNodes.begin(), road);
             renderNodes.insert(renderNodes.begin(), car);
-
-            std::vector<AnchoredVector> vectors;
-            int count = positionSampler->getSampleCount();
-            for (int i = 0; i < count; i++) {
-                vectors.push_back({ positionSampler->getNthSample(i).value + glm::vec3(0, 0.03f, 0), normalSampler->getNthSample(i).value });
-            }
-
-            renderNodes.push_back(std::make_shared<DebugVectors>(vectors, glm::vec3(1.0f, 0.0f, 0.0f)));
         } else {
             racetrackBlueprint->addInterpolationNode(camera.getRayIntersection(config));
         }
@@ -198,7 +189,7 @@ void Game::startMainLoop() {
         if (racetrackBlueprint->finished()) {
             trackPosition += deltaTime * 5;
             trackPosition = fmod(trackPosition, interpolation.getTotalLength());
-            car->setPosition(positionSampler->sample(trackPosition) + normalSampler->sample(trackPosition) * glm::vec3(0.3f, 0.0f, 0.3f));
+            car->setPosition(positionSampler->sample(trackPosition));
             car->setNormal(unitNormalSampler->sample(trackPosition));
             ground->toggleBlueprint();
         }
