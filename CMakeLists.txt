@@ -34,6 +34,7 @@ FetchContent_Declare(
 )
 FetchContent_Declare(
     assimp
+
     GIT_REPOSITORY https://github.com/assimp/assimp.git
     GIT_TAG c35200e38ea8f058812b83de2ef32c6093b0ece2
     SYSTEM
@@ -89,6 +90,8 @@ add_executable(racetrack_builder src/main.cpp
     src/interpolation_node.h
     src/render_nodes/debug_vectors.cpp
     src/render_nodes/debug_vectors.h
+    src/simulation.cpp
+    src/simulation.h
 )
 
 add_library(glad vendor/glad/src/glad.c)
@@ -96,6 +99,8 @@ target_include_directories(glad SYSTEM PUBLIC vendor/glad/include)
 
 add_library(stb_image vendor/stb_image/impl.cpp)
 target_include_directories(stb_image SYSTEM PUBLIC vendor/stb_image)
+
+target_include_directories(racetrack_builder PRIVATE ${assimp_SOURCE_DIR}/include/)
 
 target_link_libraries(
     racetrack_builder

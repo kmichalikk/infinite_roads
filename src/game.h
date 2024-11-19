@@ -7,6 +7,7 @@
 
 #include "camera.h"
 #include "game_config.h"
+#include "simulation.h"
 #include "render_nodes/ground.h"
 #include "render_nodes/car.h"
 #include "render_nodes/highlight.h"
@@ -21,14 +22,13 @@ private:
     Camera camera;
     double lastFrameTime;
     double trackPosition = 0.0f;
-    std::shared_ptr<Sampler<glm::vec3>> positionSampler;
-    std::shared_ptr<Sampler<glm::vec3>> unitNormalSampler;
     std::shared_ptr<Highlight> highlight;
     std::shared_ptr<RacetrackBlueprint> racetrackBlueprint;
     std::shared_ptr<Car> car;
     std::shared_ptr<Road> road;
     std::shared_ptr<Ground> ground;
     SplineInterpolation interpolation;
+    Simulation simulation;
     std::vector<std::shared_ptr<RenderNode>> renderNodes;
 
     static void resizeWindowCallback(GLFWwindow *window, int width, int height);

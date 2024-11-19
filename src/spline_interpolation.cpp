@@ -31,10 +31,6 @@ SplineInterpolation::SplineInterpolation(const std::vector<glm::vec3> &nodesPosi
     QubicCoeff yDerivativeCoeff = yCoeff.derivative();
     QubicCoeff zDerivativeCoeff = zCoeff.derivative();
 
-    QubicCoeff xSndDerivativeCoeff = xCoeff.sndDerivative();
-    QubicCoeff ySndDerivativeCoeff = yCoeff.sndDerivative();
-    QubicCoeff zSndDerivativeCoeff = zCoeff.sndDerivative();
-
     // we assume that all roads are perfectly flat
     // so we can calculate normal vector from tangent vector and world up
     glm::vec3 up(0, 1, 0);
@@ -45,6 +41,8 @@ SplineInterpolation::SplineInterpolation(const std::vector<glm::vec3> &nodesPosi
     double u = 0.0;
     int splineIndex = 0;
 
+    std::vector<glm::vec3> sampledPositions;
+
     while (u <= totalLength) {
         if (splineIndex < nodes.size() - 1 && nodes[splineIndex+1].t < u) {
             splineIndex++;
@@ -54,9 +52,6 @@ SplineInterpolation::SplineInterpolation(const std::vector<glm::vec3> &nodesPosi
             xDerivativeCoeff = xCoeff.derivative();
             yDerivativeCoeff = yCoeff.derivative();
             zDerivativeCoeff = zCoeff.derivative();
-            xSndDerivativeCoeff = xCoeff.sndDerivative();
-            ySndDerivativeCoeff = yCoeff.sndDerivative();
-            zSndDerivativeCoeff = zCoeff.sndDerivative();
         }
 
         glm::vec3 sample(
@@ -65,6 +60,7 @@ SplineInterpolation::SplineInterpolation(const std::vector<glm::vec3> &nodesPosi
             zCoeff.a * pow(u, 3) + zCoeff.b * pow(u, 2) + zCoeff.c * u + zCoeff.d
         );
         samples.emplace_back(InterpolationNode<glm::vec3>{ (float) u, sample });
+        sampledPositions.emplace_back(sample);
 
         glm::vec3 tangent(
             xDerivativeCoeff.a * pow(u, 2) + xDerivativeCoeff.b * u + xDerivativeCoeff.c,
@@ -77,6 +73,14 @@ SplineInterpolation::SplineInterpolation(const std::vector<glm::vec3> &nodesPosi
 
         u += step;
     }
+
+    // recalculate chordal lengths to make t values more accurate with distance travelled
+    std::vector<float> newChordalLengths = calculateChordalLength(sampledPositions);
+    totalLength = std::accumulate(newChordalLengths.begin(), newChordalLengths.end(), 0.0f);
+    for (int i = 1; i < samples.size(); i++) {
+        samples[i].t = samples[i-1].t + newChordalLengths[i-1];
+        unitNormalSamples[i].t = unitNormalSamples[i-1].t + newChordalLengths[i-1];
+    }
 }
 
 std::vector<float> SplineInterpolation::calculateChordalLength(const std::vector<glm::vec3> &nodes) {
@@ -85,7 +89,7 @@ std::vector<float> SplineInterpolation::calculateChordalLength(const std::vector
         lengths.push_back(glm::length(nodes[i-1] - nodes[i]));
     }
 
-    lengths.push_back(glm::length(*nodes.end() - nodes[0]));
+    lengths.push_back(glm::length(nodes.back() - nodes[0]));
 
     return lengths;
 }
