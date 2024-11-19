@@ -56,14 +56,14 @@ add_executable(racetrack_builder src/main.cpp
     src/macros.h
     src/render_nodes/render_node.h
     src/render_nodes/render_node.cpp
-    src/render_nodes/Probe.cpp
-    src/render_nodes/Probe.h
+    src/render_nodes/probe.cpp
+    src/render_nodes/probe.h
     src/resource_manager.cpp
     src/resource_manager.h
     src/shader.cpp
     src/shader.h
-    src/render_nodes/Ground.cpp
-    src/render_nodes/Ground.h
+    src/render_nodes/ground.cpp
+    src/render_nodes/ground.h
     src/camera.cpp
     src/camera.h
     src/events/event_dispatcher.cpp
