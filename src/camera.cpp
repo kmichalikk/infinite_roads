@@ -1,6 +1,7 @@
 #include "camera.h"
 
 #include <iostream>
+#include <utility>
 
 #include "events/event_dispatcher.h"
 #include "GLFW/glfw3.h"
@@ -20,7 +21,7 @@ Camera::Camera() {
 
 void Camera::handleMouse(void *rawEvent) {
     MouseEvent *event = static_cast<MouseEvent *>(rawEvent);
-    if (grab) {
+    if (followNode == nullptr && grab) {
         recalculate(event->position - prevMousePosition);
     }
 
@@ -71,11 +72,21 @@ glm::vec3 Camera::getRayIntersection(const GameConfig &config) const {
     return position - rayWorld * t;
 }
 
+void Camera::setFollow(std::shared_ptr<RenderNode> followNode) {
+    this->followNode = std::move(followNode);
+}
+
 void Camera::update(double dt) {
     if (lastScrollEvent + 0.1 > glfwGetTime()) {
         scrollSpeed = lastScrollDirection * 2;
     } else {
         scrollSpeed *= 0.5;
+    }
+
+    if (followNode != nullptr) {
+        origin = followNode->getPosition();
+        position = origin + offsetVector;
+        viewMatrix = glm::lookAt(position, origin, glm::vec3(0, 1.0, 0));
     }
 
     glm::vec3 newOffsetVector = offsetVector - offsetVector * scrollSpeed * (float) dt;

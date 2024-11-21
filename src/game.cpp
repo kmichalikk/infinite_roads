@@ -132,6 +132,7 @@ void Game::raycastClick(void *mouseButtonEvent) {
             renderNodes.insert(renderNodes.begin(), road);
             renderNodes.insert(renderNodes.begin(), car);
             ground->toggleBlueprint();
+            camera.setFollow(car);
         } else {
             racetrackBlueprint->addInterpolationNode(camera.getRayIntersection(config));
         }
