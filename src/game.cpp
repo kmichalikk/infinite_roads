@@ -1,3 +1,4 @@
+#include <iomanip>
 #include "game.h"
 #include "macros.h"
 #include "resource_manager.h"
@@ -121,9 +122,12 @@ void Game::raycastClick(void *mouseButtonEvent) {
             simulation.initialize(
                 car,
                 std::make_shared<Sampler<glm::vec3>>(interpolation.getPositionSampler()),
-                std::make_shared<Sampler<glm::vec3>>(interpolation.getUnitNormalSampler())
+                std::make_shared<Sampler<glm::vec3>>(interpolation.getUnitNormalSampler()),
+                std::make_shared<Sampler<glm::vec3>>(interpolation.getTangentSampler()),
+                std::make_shared<Sampler<glm::vec3>>(interpolation.getAccelerationSampler())
             );
             simulation.update(0.0);
+
             road->sampleFrom(interpolation);
             renderNodes.insert(renderNodes.begin(), road);
             renderNodes.insert(renderNodes.begin(), car);
