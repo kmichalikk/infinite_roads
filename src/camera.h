@@ -1,7 +1,6 @@
 #pragma once
 
 #include "game_config.h"
-#include "events/events.h"
 #include "glm/glm.hpp"
 #include "render_nodes/render_node.h"
 

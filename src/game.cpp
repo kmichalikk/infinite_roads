@@ -6,7 +6,6 @@
 #include "events/event_dispatcher.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
-#include "render_nodes/debug_vectors.h"
 #include "render_nodes/ground.h"
 #include "render_nodes/model.h"
 #include "render_nodes/probe.h"
@@ -119,6 +118,20 @@ void Game::raycastClick(void *mouseButtonEvent) {
     if (event->button == GLFW_MOUSE_BUTTON_LEFT && event->action == GLFW_PRESS) {
         if (racetrackBlueprint->snapToFirst(highlight.get())) {
             interpolation = racetrackBlueprint->finish();
+            Sampler<glm::vec3> positionSampler = interpolation.getPositionSampler();
+
+            float step = positionSampler.getTMax() / 5;
+            float t = 0.0f;
+            while (t < positionSampler.getTMax()) {
+                config.pointLights.emplace_back(
+                    interpolation.getPositionSampler().sample(t) + glm::vec3(0, 2, 0),
+                    glm::vec3(1, 1, 1),
+                    0.1
+                );
+
+                t += step;
+            }
+
             simulation.initialize(
                 car,
                 std::make_shared<Sampler<glm::vec3>>(interpolation.getPositionSampler()),
@@ -202,7 +215,7 @@ void Game::startMainLoop() {
         glm::mat4 viewMatrix = camera.getViewMatrix();
 
         for (const auto &node : renderNodes) {
-            node->draw(deltaTime, &config.projectionMatrix, &viewMatrix);
+            node->draw(deltaTime, &config.projectionMatrix, &viewMatrix, &config);
         }
 
         glfwSwapBuffers(window);

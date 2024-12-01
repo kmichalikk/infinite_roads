@@ -92,6 +92,7 @@ add_executable(racetrack_builder src/main.cpp
     src/render_nodes/debug_vectors.h
     src/simulation.cpp
     src/simulation.h
+    src/lights.h
 )
 
 add_library(glad vendor/glad/src/glad.c)

@@ -6,6 +6,7 @@
 
 #include "glm/glm.hpp"
 #include "../shader.h"
+#include "../game_config.h"
 
 class RenderNode {
 private:
@@ -22,7 +23,7 @@ public:
 
     virtual ~RenderNode() = default;
 
-    void draw(double dt, glm::mat4 *projection, glm::mat4 *view);
+    void draw(double dt, glm::mat4 *projection, glm::mat4 *view, GameConfig *config);
     virtual void doDraw(double dt, glm::mat4 *parentTransform);
 
     std::shared_ptr<RenderNode> getChild(std::string name);
@@ -37,4 +38,5 @@ public:
     void setPosition(glm::vec3 position) { this->position = position; }
     void setRotation(glm::vec3 rotation) { this->rotation = rotation; }
     void setParent(RenderNode *parent) { this->parent = parent;  }
+    virtual bool supportsLights() { return false; }
 };

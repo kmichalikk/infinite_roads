@@ -80,3 +80,36 @@ void Shader::setMat4(std::string name, glm::mat4 other) const {
     auto loc = glGetUniformLocation(shaderId, name.c_str());
     glUniformMatrix4fv(loc, 1, false, glm::value_ptr(other));
 }
+
+void Shader::setPointLights(std::vector<PointLight> lights) const {
+    int pointLightsCount = std::min(MAX_POINT_LIGHTS, (int) lights.size());
+
+    setInt("pointLightsCount", pointLightsCount);
+
+    std::string positionLocString("pointLights[0].position");
+    std::string constantLocString("pointLights[0].constant");
+    std::string linearLocString("pointLights[0].linear");
+    std::string quadraticLocString("pointLights[0].quadratic");
+    std::string ambientLocString("pointLights[0].ambient");
+    std::string diffuseLocString("pointLights[0].diffuse");
+
+    for (int i = 0; i < pointLightsCount; i++) {
+        setVec3f(positionLocString, lights[i].position);
+        positionLocString.replace(12, std::string::npos, std::to_string(i+1) + "].position");
+
+        setFloat(constantLocString, lights[i].constant);
+        constantLocString.replace(12, std::string::npos, std::to_string(i+1) + "].constant");
+
+        setFloat(linearLocString, lights[i].linear);
+        linearLocString.replace(12, std::string::npos, std::to_string(i+1) + "].linear");
+
+        setFloat(quadraticLocString, lights[i].quadratic);
+        quadraticLocString.replace(12, std::string::npos, std::to_string(i+1) + "].quadratic");
+
+        setFloat(ambientLocString, lights[i].ambient);
+        ambientLocString.replace(12, std::string::npos, std::to_string(i+1) + "].ambient");
+
+        setVec3f(diffuseLocString, lights[i].diffuse);
+        diffuseLocString.replace(12, std::string::npos, std::to_string(i+1) + "].diffuse");
+    }
+}

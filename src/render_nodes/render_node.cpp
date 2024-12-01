@@ -14,12 +14,16 @@ RenderNode::RenderNode(std::string name, std::string shaderName)
     shader = ResourceManager::getShader(shaderName);
 }
 
-void RenderNode::draw(double dt, glm::mat4 *projection, glm::mat4 *view) {
+void RenderNode::draw(double dt, glm::mat4 *projection, glm::mat4 *view, GameConfig *config) {
     if (children.size() > 0) {
         for (std::pair<std::string, std::shared_ptr<RenderNode>> ch : children) {
             ch.second->shader.use();
             ch.second->shader.setMat4("projection", *projection);
             ch.second->shader.setMat4("view", *view);
+            if (ch.second->supportsLights()) {
+                ch.second->shader.setPointLights(config->pointLights);
+            }
+
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, position);
             model = glm::rotate(model, rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -31,6 +35,10 @@ void RenderNode::draw(double dt, glm::mat4 *projection, glm::mat4 *view) {
         shader.use();
         shader.setMat4("projection", *projection);
         shader.setMat4("view", *view);
+        if (supportsLights()) {
+            shader.setPointLights(config->pointLights);
+        }
+
         glm::mat4 model = glm::mat4(1.0f);
         doDraw(dt, &model);
     }

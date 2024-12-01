@@ -1,6 +1,9 @@
 #pragma once
 
 #include <string>
+#include <vector>
+
+#include "lights.h"
 #include "glm/glm.hpp"
 
 class Shader {
@@ -18,4 +21,5 @@ public:
     void setVec3f(std::string name, float x, float y, float z) const;
     void setVec3f(std::string name, glm::vec3 other) const;
     void setMat4(std::string name, glm::mat4 other) const;
+    void setPointLights(std::vector<PointLight> lights) const;
 };

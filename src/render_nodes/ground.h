@@ -13,4 +13,5 @@ public:
     explicit Ground(int canvasSize);
     void doDraw(double dt, glm::mat4 *parentTransform) override;
     void toggleBlueprint();
+    bool supportsLights() override { return true; }
 };
