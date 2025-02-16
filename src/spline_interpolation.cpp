@@ -1,6 +1,5 @@
 #include "spline_interpolation.h"
 
-#include <iostream>
 #include <numeric>
 
 #include "macros.h"
@@ -8,7 +7,7 @@
 #include "Eigen/Sparse"
 
 SplineInterpolation::SplineInterpolation() {
-    samples = { InterpolationNode<glm::vec3>{ 0.0f, glm::vec3() } };
+    samples = { };
 }
 
 SplineInterpolation::SplineInterpolation(const std::vector<glm::vec3> &nodesPositions) {

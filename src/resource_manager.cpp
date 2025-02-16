@@ -7,8 +7,8 @@
 #include "macros.h"
 #include "GLFW/glfw3.h"
 
-const std::string SHADERS_DIR = "../assets/shaders/";
-const std::string TEXTURES_DIR = "../assets/textures/";
+const std::string SHADERS_DIR = "./assets/shaders/";
+const std::string TEXTURES_DIR = "./assets/textures/";
 
 std::map<std::string, Shader> ResourceManager::shaders;
 std::map<std::string, Texture> ResourceManager::textures;

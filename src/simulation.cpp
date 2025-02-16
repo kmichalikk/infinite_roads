@@ -1,5 +1,7 @@
 #include "simulation.h"
 
+#include <iostream>
+#include <ostream>
 #include <utility>
 
 #include "render_nodes/debug_vectors.h"
@@ -55,7 +57,7 @@ Sampler<float> Simulation::getSmoothedOutCurvatureAtT() const {
 
         // pad the vector as though it was looping
         int oldSize = curvatureAtT.size();
-        for (int i = 0; i < center; i++) {
+        for (int i = 0; i < center + 1; i++) {
             curvatureAtT.insert(curvatureAtT.begin(), *(curvatureAtT.rbegin()+2*i));
             curvatureAtT.emplace_back(curvatureAtT[2*i+1]);
         }
@@ -89,7 +91,7 @@ Sampler<float> Simulation::makePrefixSums(Sampler<float> floatSampler) {
 }
 
 Sampler<float> Simulation::makeScaledLUT(Sampler<float> prefixSumSampler, float scale) {
-    std::vector<InterpolationNode<float>> lut;
+    std::vector<InterpolationNode<float>> lut = { {0.0f, 0.0f} };
     float maxValue = prefixSumSampler.sample(prefixSumSampler.getTMax());
     float scaleFactor = scale / maxValue;
     for (int i = 1; i < prefixSumSampler.getSampleCount(); i++) {

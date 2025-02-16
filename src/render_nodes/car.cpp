@@ -3,12 +3,15 @@
 #include <iostream>
 #include <glad/glad.h>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #include "../resource_manager.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/gtx/vector_angle.hpp"
 
 Car::Car()
-    : Model("car", "car", "../assets/models/car.glb") {
+    : Model("car", "car", "./assets/models/car.glb") {
 }
 
 void Car::calculateAngles() {
