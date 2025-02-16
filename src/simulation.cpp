@@ -69,7 +69,7 @@ Sampler<float> Simulation::getSmoothedOutCurvatureAtT() const {
 
         std::vector<InterpolationNode<float>> smoothedCurvatureAtT;
         for (int i = center; i < oldSize + center; i++) {
-            smoothedCurvatureAtT.emplace_back(InterpolationNode<float>{curvatureAtT[i].t, runningAverage});
+            smoothedCurvatureAtT.emplace_back(InterpolationNode<float>{curvatureAtT[i + 1].t, runningAverage});
             runningAverage -= curvatureAtT[i - center].value / window;
             runningAverage += curvatureAtT[i + center + 1].value / window;
         }
@@ -103,7 +103,7 @@ Sampler<float> Simulation::makeScaledLUT(Sampler<float> prefixSumSampler, float 
     return { lut };
 }
 
-Sampler<float> Simulation::inverseLUT(Sampler<float> lut) {
+Sampler<float> Simulation::inverseLUT(const Sampler<float>&& lut) {
     std::vector<InterpolationNode<float>> samples;
     for (int i = 1; i < lut.getSampleCount(); i++) {
         InterpolationNode<float> sample = lut.getNthSample(i);

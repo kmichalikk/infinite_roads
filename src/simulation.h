@@ -18,7 +18,7 @@ private:
     Sampler<float> getSmoothedOutCurvatureAtT() const;
     static Sampler<float> makePrefixSums(Sampler<float> floatSampler);
     static Sampler<float> makeScaledLUT(Sampler<float> prefixSumSampler, float scale);
-    static Sampler<float> inverseLUT(Sampler<float> lut);
+    static Sampler<float> inverseLUT(const Sampler<float>&& lut);
     void applyLUTToSamplers(Sampler<float> LUT) ;
 public:
     Simulation();
