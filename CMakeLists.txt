@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
 
-include(FetchContent)
-
 project(racetrack_builder)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -11,22 +9,10 @@ set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
 
-FetchContent_Declare(
-    glfw
-    GIT_REPOSITORY https://github.com/glfw/glfw.git
-    GIT_TAG 7b6aead9fb88b3623e3b3725ebb42670cbe4c579
-    SYSTEM
-)
-FetchContent_Declare(
-    glm
-    GIT_REPOSITORY https://github.com/g-truc/glm.git
-    GIT_TAG 0af55ccecd98d4e5a8d1fad7de25ba429d60e863
-    SYSTEM
-)
-FetchContent_MakeAvailable(glfw)
-FetchContent_MakeAvailable(glm)
-
 add_subdirectory(vendor/assimp-5.4.3)
+set(GLFW_BUILD_DOCS off)
+add_subdirectory(vendor/glfw-3.4)
+add_subdirectory(vendor/glm-1.0.1)
 
 # https://stackoverflow.com/questions/77210209
 if(NOT TARGET Eigen3::Eigen)
