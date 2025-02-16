@@ -72,3 +72,5 @@ target_link_libraries(
     stb_image
     assimp
 )
+
+file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
